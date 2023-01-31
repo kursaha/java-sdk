@@ -18,6 +18,6 @@ public class KursahaClient {
     public static void main(String[] args) throws MailkeetsSendMailException {
         String apiKey = ""; //Please enter your api key to send email
         KursahaClient kursahaClient = new KursahaClient(apiKey);
-        System.out.println(kursahaClient.mk.send("hello", "a@d.com", "d@k.c", "Anupal", "Hello world"));
+        System.out.println(kursahaClient.mk.send("hello", "a@d.com", "d@k.c", "John", "Hello world1"));
     }
 }
