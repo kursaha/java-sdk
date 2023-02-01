@@ -13,6 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 
+/**
+ * Mailkeets client implementation
+ */
 public class MailkeetsClientImpl implements MailkeetsClient {
     private static final String BASE_URL = "https://kursaha.com/api/";
     private final String apiKey;
@@ -20,6 +23,10 @@ public class MailkeetsClientImpl implements MailkeetsClient {
     private final Gson gson;
 
 
+    /**
+     * Constructor
+     * @param credentials credentials object
+     */
     public MailkeetsClientImpl(Credentials credentials) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()

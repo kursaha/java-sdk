@@ -3,6 +3,9 @@ package com.kursaha.mailkeets.dto;
 import com.google.gson.JsonArray;
 import lombok.Data;
 
+/**
+ * Response in case of error
+ */
 @Data
 public class ErrorMessageDto {
     private String status;

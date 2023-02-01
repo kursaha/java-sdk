@@ -1,12 +1,88 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
-group 'com.kursaha.engagedatadrive'
-version '0.0.1-SNAPSHOT'
+group = "com.kursaha"
+version '0.0.1'
 
 repositories {
     mavenCentral()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/content/repositories/releases/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'java-sdk'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Kursaha SDK'
+                packaging = 'jar'
+                // optionally artifactId can be defined here
+                description = 'SDK used to connect to Kursaha services.'
+                url = 'https://docs.kursaha.com/java-sdk'
+
+                scm {
+                    connection = 'scm:svn:https://github.com/kursaha/java-sdk/tree/main'
+                    developerConnection = 'scm:svn:https://github.com/kursaha/java-sdk/tree/dev'
+                    url = 'https://github.com/kursaha/java-sdk/tree/main'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'KursahaTech'
+                        name = 'Kursaha Tech'
+                        email = 'hello@kursaha.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
 
 dependencies {

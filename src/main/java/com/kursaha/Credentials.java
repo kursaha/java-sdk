@@ -2,6 +2,9 @@ package com.kursaha;
 
 import lombok.Getter;
 
+/**
+ * Credentials file
+ */
 public class Credentials {
     @Getter
     private final String apiKey;
