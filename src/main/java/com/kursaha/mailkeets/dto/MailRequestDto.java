@@ -1,12 +1,18 @@
 package com.kursaha.mailkeets.dto;
 
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class MailRequestDto {
-    private String fromName;
-    private String fromAddress;
-    private String to;
-    private String subject;
-    private String body;
+    @NonNull
+    private final String fromName;
+    @NonNull
+    private final String fromAddress;
+    @NonNull
+    private final String to;
+    @NonNull
+    private final String subject;
+    @NonNull
+    private final String body;
 }
