@@ -1,7 +1,7 @@
 package com.kursaha.mailkeets.client;
 
 import com.google.gson.Gson;
-import com.kursaha.mailkeets.dto.ErrorMessageDto;
+import com.kursaha.ErrorMessageDto;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.mailkeets.exception.MailkeetsSendMailException;

@@ -1,4 +1,4 @@
-package com.kursaha.mailkeets.dto;
+package com.kursaha;
 
 import com.google.gson.JsonArray;
 import lombok.Data;
