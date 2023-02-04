@@ -6,7 +6,7 @@ import retrofit2.http.*;
 
 public interface EngageDataDriveService {
 
-    @POST("event-flows/{id}/signal")
+    @POST("event-flows/signal/{id}")
     @Headers({"Content-type: application/json"})
     Call<Void> sendEvent(
             @Body EventFlowRequestDto requestDto,
