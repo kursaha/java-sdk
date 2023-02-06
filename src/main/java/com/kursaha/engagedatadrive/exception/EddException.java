@@ -1,6 +1,6 @@
 package com.kursaha.engagedatadrive.exception;
 
-import com.kursaha.ErrorMessageDto;
+import com.kursaha.common.ErrorMessageDto;
 import lombok.Getter;
 
 /**

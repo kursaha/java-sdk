@@ -7,13 +7,13 @@ import lombok.NonNull;
 
 @Data
 public class EventFlowRequestDto {
-    @SerializedName("id")
     @NonNull
-    private final String emitterId;
+    @SerializedName("userId")
+    private final String userId;
+    @NonNull
     @SerializedName("stepNodeId")
-    @NonNull
     private final String stepNodeId;
-    @SerializedName("data")
     @NonNull
+    @SerializedName("data")
     private final JsonObject data;
 }

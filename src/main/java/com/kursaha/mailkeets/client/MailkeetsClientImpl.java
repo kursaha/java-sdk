@@ -1,7 +1,7 @@
 package com.kursaha.mailkeets.client;
 
 import com.google.gson.Gson;
-import com.kursaha.ErrorMessageDto;
+import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.mailkeets.exception.MailkeetsSendMailException;
@@ -17,7 +17,7 @@ import java.io.IOException;
  * Mailkeets client implementation
  */
 public class MailkeetsClientImpl implements MailkeetsClient {
-    private static final String BASE_URL = "https://kursaha.com/api/";
+    private static final String BASE_URL = "https://mailkeets.kursaha.com/api/";
     private final String apiKey;
     private final MailkeetsService service;
     private final Gson gson;
@@ -27,14 +27,14 @@ public class MailkeetsClientImpl implements MailkeetsClient {
      * Constructor
      * @param credentials credentials object
      */
-    public MailkeetsClientImpl(Credentials credentials) {
+    public MailkeetsClientImpl(Credentials credentials, Gson gson) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(MailkeetsService.class);
-        gson = new Gson();
+        this.gson = gson;
     }
 
     @Override

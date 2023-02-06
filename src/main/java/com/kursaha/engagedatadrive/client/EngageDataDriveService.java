@@ -10,7 +10,7 @@ public interface EngageDataDriveService {
     @Headers({"Content-type: application/json"})
     Call<Void> sendEvent(
             @Body EventFlowRequestDto requestDto,
-            @Path("id") String id,
+            @Path("id") Long id,
             @Header("Authorization") String apiKey
     );
 }

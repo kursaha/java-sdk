@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.kursaha.Credentials;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
-import com.kursaha.ErrorMessageDto;
+import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.exception.EddException;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -15,36 +15,33 @@ import java.io.IOException;
 
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
-    private static final String BASE_URL = "https://kursaha.com/api/";
+    private static final String BASE_URL = "https://edd.kursaha.com/api/";
     // event Id
-    private final String id;
-    // api key id
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
 
-    public EngageDataDriveClientImpl(Credentials credentials, String id) {
-        this.id = id;
+    public EngageDataDriveClientImpl(Credentials credentials, Gson gson) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(EngageDataDriveService.class);
-        gson = new Gson();
+        this.gson = gson;
     }
 
 
     @Override
-    public Void sendEventFlow(String emitterId, String stepNodeId, JsonObject data) throws EddException {
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(emitterId, stepNodeId, data);
-        return sendEventFlow(eventFlowRequestDto);
+    public void sendEventFlow(Long eventflowId, String userId, String stepNodeId, JsonObject data) throws EddException {
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(userId, stepNodeId, data);
+        sendEventFlow(eventflowId, eventFlowRequestDto);
     }
 
     @Override
-    public Void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
+    public void sendEventFlow(Long eventflowId, EventFlowRequestDto eventFlowRequestDto) throws EddException {
         try {
-            Call<Void> repos = service.sendEvent(eventFlowRequestDto, id, "Bearer " + apiKey);
+            Call<Void> repos = service.sendEvent(eventFlowRequestDto, eventflowId, "Bearer " + apiKey);
             Response<Void> response = repos.execute();
             if (!response.isSuccessful()) {
                 try {
@@ -54,7 +51,6 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                     throw new EddException(ex);
                 }
             }
-            return response.body();
         } catch (IOException | EddException e) {
             throw new EddException(e);
         }
