@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NonNull;
 
+/**
+ * EventFlowRequestDto holds the payload which is required for the EngageDataDriveService api
+ */
 @Data
 public class EventFlowRequestDto {
     @NonNull

@@ -25,6 +25,8 @@ public class MailkeetsClientImpl implements MailkeetsClient {
     /**
      * Constructor
      * @param credentials credentials object
+     * @param gson ""
+     * @param baseUrl baseurl of api
      */
     public MailkeetsClientImpl(Credentials credentials, Gson gson, String baseUrl) {
         this.apiKey = credentials.getApiKey();

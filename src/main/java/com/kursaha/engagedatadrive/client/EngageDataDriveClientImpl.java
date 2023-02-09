@@ -13,12 +13,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 
+/**
+ * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
+ */
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     // event Id
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
+
+    /**
+     * Constructor of EngageDataDriveClientImpl
+     * @param credentials customer credential
+     * @param gson ""
+     * @param baseUrl baseurl of api
+     */
 
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl) {
         this.apiKey = credentials.getApiKey();

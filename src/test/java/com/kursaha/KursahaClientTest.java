@@ -13,12 +13,12 @@ class KursahaClientTest {
 
     @BeforeEach
     public void init() {
-        kursahaClient = new KursahaClient(apiKey, "http://localhost:8082/api", "http://localhost:8081/api");
+        kursahaClient = new KursahaClient(apiKey, "http://localhost:8082/api/", "http://localhost:8081/api/");
         emitterId = "123";
     }
 
     @Test
     public void testSendLoginEvent() throws Exception {
-        kursahaClient.edd.sendEventFlow(29L, "login_event", new JsonObject(), emitterId);
+        kursahaClient.edd.sendEventFlow(13L, "start_event", new JsonObject(), emitterId);
     }
 }
