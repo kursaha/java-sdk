@@ -15,16 +15,15 @@ import java.io.IOException;
 
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
-    private static final String BASE_URL = "https://edd.kursaha.com/api/";
     // event Id
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
 
-    public EngageDataDriveClientImpl(Credentials credentials, Gson gson) {
+    public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(EngageDataDriveService.class);
@@ -33,8 +32,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
 
     @Override
-    public void sendEventFlow(Long eventflowId, String userId, String stepNodeId, JsonObject data) throws EddException {
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(userId, stepNodeId, data);
+    public void sendEventFlow(Long eventflowId, String stepNodeId, JsonObject data, String emitterId) throws EddException {
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
         sendEventFlow(eventflowId, eventFlowRequestDto);
     }
 

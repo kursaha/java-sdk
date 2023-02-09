@@ -8,12 +8,12 @@ import lombok.NonNull;
 @Data
 public class EventFlowRequestDto {
     @NonNull
-    @SerializedName("userId")
-    private final String userId;
+    private final Long eventflowId;
     @NonNull
-    @SerializedName("stepNodeId")
     private final String stepNodeId;
     @NonNull
-    @SerializedName("data")
     private final JsonObject data;
+    @NonNull
+    private final String emitterId;
+
 }

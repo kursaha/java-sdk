@@ -11,25 +11,24 @@ public interface EngageDataDriveClient {
 
     /**
      * run eventFlow on engage data drive
-     * @param userId unique Id of the user
      * @param stepNodeId id of the event
      * @param data payload
+     * @param emitterId unique Id of the user
      * @throws EddException if fails
      */
     void sendEventFlow(
             Long eventflowId,
-            String userId,
             String stepNodeId,
-            JsonObject data
+            JsonObject data,
+            String emitterId
     ) throws EddException;
 
     /**
      * run eventFlow on engage data drive
      *
-     * @param eventflowId
+     * @param eventflowId id of the event flow
      * @param eventFlowRequestDto object of EventFlowRequestDto
-     * @return
-     * @throws EddException
+     * @throws EddException if error happens
      */
 
     void sendEventFlow(Long eventflowId, EventFlowRequestDto eventFlowRequestDto) throws EddException;
