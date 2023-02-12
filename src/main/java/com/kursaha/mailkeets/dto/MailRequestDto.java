@@ -3,6 +3,9 @@ package com.kursaha.mailkeets.dto;
 import lombok.Data;
 import lombok.NonNull;
 
+/**
+ * MailRequestDto is a class by which we can send request to mail-send api
+ */
 @Data
 public class MailRequestDto {
     @NonNull

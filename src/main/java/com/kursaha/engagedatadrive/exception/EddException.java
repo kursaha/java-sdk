@@ -1,4 +1,4 @@
-package com.kursaha.mailkeets.exception;
+package com.kursaha.engagedatadrive.exception;
 
 import com.kursaha.common.ErrorMessageDto;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * Mailkeets exception
  */
-public class MailkeetsSendMailException extends Exception{
+public class EddException extends Exception{
 
     /**
      * Error message dto
@@ -18,7 +18,7 @@ public class MailkeetsSendMailException extends Exception{
      * Mailkeets exception
      * @param e exception
      */
-    public MailkeetsSendMailException(Exception e) {
+    public EddException(Exception e) {
         super(e);
     }
 
@@ -26,7 +26,7 @@ public class MailkeetsSendMailException extends Exception{
      * Mailkeets exception
      * @param errorMessageDto error dto
      */
-    public MailkeetsSendMailException(ErrorMessageDto errorMessageDto) {
+    public EddException(ErrorMessageDto errorMessageDto) {
         super(errorMessageDto.getMessage());
         this.errorMessageDto = errorMessageDto;
     }
@@ -35,7 +35,7 @@ public class MailkeetsSendMailException extends Exception{
      * Mailkeets exception
      * @param message string
      */
-    public MailkeetsSendMailException(String message) {
+    public EddException(String message) {
         super(message);
     }
 }
