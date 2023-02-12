@@ -2,6 +2,7 @@ package com.kursaha.engagedatadrive.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
 import com.kursaha.common.ErrorMessageDto;
@@ -53,9 +54,19 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             Call<Void> repos = service.sendEvent(eventFlowRequestDto, eventflowId, "Bearer " + apiKey);
             Response<Void> response = repos.execute();
             if (!response.isSuccessful()) {
+                String responseAsString = null;
                 try {
-                    ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                    StringBuilder sb = new StringBuilder();
+                    for (int ch; (ch = response.errorBody().charStream().read()) != -1; ) {
+                        sb.append((char) ch);
+                    }
+                    responseAsString = sb.toString();
+                    ErrorMessageDto errorResponse = gson.fromJson(responseAsString, ErrorMessageDto.class);
                     throw new EddException(errorResponse);
+                } catch (JsonSyntaxException jse) {
+                    if (responseAsString != null) {
+                        throw new EddException(responseAsString);
+                    }
                 } catch (Exception ex) {
                     throw new EddException(ex);
                 }
