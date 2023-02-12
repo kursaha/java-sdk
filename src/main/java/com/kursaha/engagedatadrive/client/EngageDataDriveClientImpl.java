@@ -45,13 +45,13 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     @Override
     public void sendEventFlow(Long eventflowId, String stepNodeId, JsonObject data, String emitterId) throws EddException {
         EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
-        sendEventFlow(eventflowId, eventFlowRequestDto);
+        sendEventFlow(eventFlowRequestDto);
     }
 
     @Override
-    public void sendEventFlow(Long eventflowId, EventFlowRequestDto eventFlowRequestDto) throws EddException {
+    public void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
         try {
-            Call<Void> repos = service.sendEvent(eventFlowRequestDto, eventflowId, "Bearer " + apiKey);
+            Call<Void> repos = service.sendEvent("Bearer " + apiKey, eventFlowRequestDto);
             Response<Void> response = repos.execute();
             if (!response.isSuccessful()) {
                 String responseAsString = null;

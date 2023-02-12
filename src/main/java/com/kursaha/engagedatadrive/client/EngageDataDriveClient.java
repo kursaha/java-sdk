@@ -26,10 +26,9 @@ public interface EngageDataDriveClient {
 
     /**
      * run eventFlow on engage data drive
-     * @param eventflowId id of the event flow
      * @param eventFlowRequestDto object of EventFlowRequestDto
      * @throws EddException if error happens
      */
 
-    void sendEventFlow(Long eventflowId, EventFlowRequestDto eventFlowRequestDto) throws EddException;
+    void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException;
 }
