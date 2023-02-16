@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
 import com.kursaha.common.ErrorMessageDto;
+import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import com.kursaha.engagedatadrive.exception.EddException;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -13,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
@@ -30,7 +32,6 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
      * @param gson ""
      * @param baseUrl baseurl of api
      */
-
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()
@@ -43,13 +44,32 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
 
     @Override
-    public void sendEventFlow(Long eventflowId, String stepNodeId, JsonObject data, String emitterId) throws EddException {
+    public void signal(Long eventflowId, String stepNodeId, String emitterId) throws EddException {
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, null, emitterId);
+        sendEventFlow(eventFlowRequestDto);
+    }
+
+
+    @Override
+    public void signalMail(Long eventflowId, String stepNodeId, String emitterId, SignalMailPayload signalMailPayloadData) throws EddException {
+
+        JsonObject data = new JsonObject();
+        if (signalMailPayloadData.getEmail() == null || signalMailPayloadData.getEmail().isBlank()) {
+            throw new EddException("email is missing");
+        }
+        data.addProperty("email", signalMailPayloadData.getEmail());
+
+        if(signalMailPayloadData.getExtraFields() != null) {
+            for (Map.Entry<String, String> extra : signalMailPayloadData.getExtraFields().entrySet()) {
+                data.addProperty(extra.getKey(), extra.getValue());
+            }
+        }
+
         EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
         sendEventFlow(eventFlowRequestDto);
     }
 
-    @Override
-    public void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
+    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
         try {
             Call<Void> repos = service.sendEvent("Bearer " + apiKey, eventFlowRequestDto);
             Response<Void> response = repos.execute();

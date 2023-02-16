@@ -1,14 +1,14 @@
 package com.kursaha;
 
-import com.google.gson.JsonObject;
+import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class KursahaClientTest {
 
     /**
-     * Create a unique api key from https://kursaha.com/engage-data-drive/api-key. After that, please add that api key
-     * into system environment.
+     * Create a unique api key from <a href="https://kursaha.com/engage-data-drive/api-key">API Key</a>.
+     * After that, please add that api key into system environment.
      */
     private final String apiKey = System.getenv("key"); // Name of the Environment variable
     private KursahaClient kursahaClient;
@@ -22,7 +22,12 @@ class KursahaClientTest {
     }
 
     @Test
-    public void testSendLoginEvent() throws Exception {
-        kursahaClient.edd.sendEventFlow(-1L /* WorkflowId */, "<Step_Node_Id>", new JsonObject() /* User Custom Payload*/, emitterId);
+    public void testStartWorkflow() throws Exception {
+        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId);
+    }
+    @Test
+    public void testSignalMail() throws Exception {
+        SignalMailPayload payload = new SignalMailPayload("example@mail.com");
+        kursahaClient.edd.signalMail(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId, payload);
     }
 }

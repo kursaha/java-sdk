@@ -1,7 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
-import com.google.gson.JsonObject;
-import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import com.kursaha.engagedatadrive.exception.EddException;
 
 /**
@@ -11,24 +10,32 @@ public interface EngageDataDriveClient {
 
     /**
      * run eventFlow on engage data drive
+     *
      * @param eventflowId id of the whole event
-     * @param stepNodeId id of the step event
-     * @param data payload
-     * @param emitterId unique Id of the user
+     * @param stepNodeId  id of the step event
+     * @param emitterId   unique Id of the user
      * @throws EddException if fails
      */
-    void sendEventFlow(
+    void signal(
             Long eventflowId,
             String stepNodeId,
-            JsonObject data,
             String emitterId
     ) throws EddException;
 
-    /**
-     * run eventFlow on engage data drive
-     * @param eventFlowRequestDto object of EventFlowRequestDto
-     * @throws EddException if error happens
-     */
 
-    void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException;
+    /**
+     * Method is used to signal mail event if query in not provided in the event flow node in the graph
+     *
+     * @param eventflowId    id of the event flow
+     * @param stepNodeId     id of the step event
+     * @param emitterId      unique Id of the user
+     * @param signalMailPayloadData mail data
+     * @throws EddException if fails
+     */
+    void signalMail(
+            Long eventflowId,
+            String stepNodeId,
+            String emitterId,
+            SignalMailPayload signalMailPayloadData
+    ) throws EddException;
 }

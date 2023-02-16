@@ -14,7 +14,6 @@ public class EventFlowRequestDto {
     private final Long eventflowId;
     @NonNull
     private final String stepNodeId;
-    @NonNull
     private final JsonObject data;
     @NonNull
     private final String emitterId;
