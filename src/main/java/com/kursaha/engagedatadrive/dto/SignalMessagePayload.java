@@ -5,15 +5,17 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 /**
- * Payload for mail signal event
+ * Payload for message signal event
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SignalMailPayload extends EventPayload {
+public class SignalMessagePayload extends EventPayload {
 
     /**
-     * email id of the emitter
+     * phone number of the emitter
      */
     @NonNull
-    private final String email;
+    private String phoneNumber;
+
+
 }

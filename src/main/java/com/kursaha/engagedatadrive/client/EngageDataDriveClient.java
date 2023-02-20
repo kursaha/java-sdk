@@ -1,6 +1,8 @@
 package com.kursaha.engagedatadrive.client;
 
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
+import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
+import com.kursaha.engagedatadrive.dto.StartEventPayload;
 import com.kursaha.engagedatadrive.exception.EddException;
 
 /**
@@ -29,13 +31,45 @@ public interface EngageDataDriveClient {
      * @param eventflowId    id of the event flow
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
-     * @param signalMailPayloadData mail data
+     * @param payload        mail data
      * @throws EddException if fails
      */
-    void signalMail(
+    void signal(
             Long eventflowId,
             String stepNodeId,
             String emitterId,
-            SignalMailPayload signalMailPayloadData
+            SignalMailPayload payload
+    ) throws EddException;
+
+    /**
+     * Method is used to signal mail event if query in not provided in the event flow node in the graph
+     *
+     * @param eventflowId    id of the event flow
+     * @param stepNodeId     id of the step event
+     * @param emitterId      unique Id of the user
+     * @param payload mail data
+     * @throws EddException if fails
+     */
+    void signal(
+            Long eventflowId,
+            String stepNodeId,
+            String emitterId,
+            StartEventPayload payload
+    ) throws EddException;
+
+    /**
+     * Method is used to signal mail event if query in not provided in the event flow node in the graph
+     *
+     * @param eventflowId    id of the event flow
+     * @param stepNodeId     id of the step event
+     * @param emitterId      unique Id of the user
+     * @param payload        message data
+     * @throws EddException if fails
+     */
+    void signal(
+            Long eventflowId,
+            String stepNodeId,
+            String emitterId,
+            SignalMessagePayload payload
     ) throws EddException;
 }

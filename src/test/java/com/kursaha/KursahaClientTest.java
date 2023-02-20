@@ -1,7 +1,9 @@
 package com.kursaha;
 
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
+import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class KursahaClientTest {
@@ -22,12 +24,14 @@ class KursahaClientTest {
     }
 
     @Test
+    @Disabled("use to test endpoints")
     public void testStartWorkflow() throws Exception {
         kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId);
     }
     @Test
+    @Disabled("use to test endpoints")
     public void testSignalMail() throws Exception {
         SignalMailPayload payload = new SignalMailPayload("example@mail.com");
-        kursahaClient.edd.signalMail(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId, payload);
+        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId, payload);
     }
 }

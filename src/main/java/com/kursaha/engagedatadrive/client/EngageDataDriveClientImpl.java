@@ -7,6 +7,8 @@ import com.kursaha.Credentials;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
 import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
+import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
+import com.kursaha.engagedatadrive.dto.StartEventPayload;
 import com.kursaha.engagedatadrive.exception.EddException;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -51,22 +53,45 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
 
     @Override
-    public void signalMail(Long eventflowId, String stepNodeId, String emitterId, SignalMailPayload signalMailPayloadData) throws EddException {
-
+    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMailPayload payload) throws EddException {
         JsonObject data = new JsonObject();
-        if (signalMailPayloadData.getEmail() == null || signalMailPayloadData.getEmail().isBlank()) {
+        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
             throw new EddException("email is missing");
         }
-        data.addProperty("email", signalMailPayloadData.getEmail());
+        data.addProperty("email", payload.getEmail());
+        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
+    }
 
-        if(signalMailPayloadData.getExtraFields() != null) {
-            for (Map.Entry<String, String> extra : signalMailPayloadData.getExtraFields().entrySet()) {
-                data.addProperty(extra.getKey(), extra.getValue());
-            }
+    private void signalInternal(Long eventflowId, String stepNodeId, String emitterId, Map<String , String> extraFields, JsonObject data ) throws EddException {
+        for (Map.Entry<String, String> extra : extraFields.entrySet()) {
+            data.addProperty(extra.getKey(), extra.getValue());
         }
 
         EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
         sendEventFlow(eventFlowRequestDto);
+    }
+
+    @Override
+    public void signal(Long eventflowId, String stepNodeId, String emitterId, StartEventPayload payload) throws EddException {
+        JsonObject data = new JsonObject();
+        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
+            data.addProperty("email", payload.getEmail());
+        }
+        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
+            data.addProperty("phone_number", payload.getEmail());
+        }
+        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
+
+    }
+
+    @Override
+    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMessagePayload payload) throws EddException {
+        JsonObject data = new JsonObject();
+        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
+            throw new EddException("phone number is missing");
+        }
+        data.addProperty("phone_number", payload.getPhoneNumber());
+        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
     }
 
     private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
