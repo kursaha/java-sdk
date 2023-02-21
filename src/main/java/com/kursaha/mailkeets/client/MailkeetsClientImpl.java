@@ -46,7 +46,7 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             String fromName,
             String body
     ) throws MailkeetsSendMailException {
-        MailRequestDto requestDto = new MailRequestDto(fromName, fromName, to, subject, body);
+        MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, body);
         return sendMail(requestDto);
     }
 
