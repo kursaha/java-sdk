@@ -10,7 +10,7 @@ import lombok.NonNull;
  */
 @Data
 public class EventFlowRequestDto {
-    @NonNull
+//    @NonNull
     private final Long eventflowId;
     @NonNull
     private final String stepNodeId;

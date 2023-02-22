@@ -1,10 +1,11 @@
 package com.kursaha;
 
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
+import com.kursaha.engagedatadrive.exception.EddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import java.util.UUID;
 
 class KursahaClientTest {
 
@@ -28,10 +29,19 @@ class KursahaClientTest {
     public void testStartWorkflow() throws Exception {
         kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId);
     }
+
     @Test
     @Disabled("use to test endpoints")
     public void testSignalMail() throws Exception {
         SignalMailPayload payload = new SignalMailPayload("example@mail.com");
-        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId, payload);
+        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_ID>", emitterId, payload);
+    }
+
+    @Test
+    @Disabled("use to test endpoints with identifier")
+    public void testGetIdByIdentifier() throws EddException {
+        UUID identifier = UUID.fromString("<UUID of eventFlow>");
+        SignalMailPayload payload = new SignalMailPayload("example@mail.com");
+        kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "<STEP_NODE_ID>", emitterId, payload);
     }
 }
