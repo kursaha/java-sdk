@@ -4,11 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
-import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.*;
 import com.kursaha.common.ErrorMessageDto;
-import com.kursaha.engagedatadrive.dto.SignalMailPayload;
-import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
-import com.kursaha.engagedatadrive.dto.StartEventPayload;
 import com.kursaha.engagedatadrive.exception.EddException;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -17,13 +14,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
  */
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
-    // event Id
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
@@ -31,7 +28,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     /**
      * Constructor of EngageDataDriveClientImpl
      * @param credentials customer credential
-     * @param gson ""
+     * @param gson object of Gson
      * @param baseUrl baseurl of api
      */
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl) {
@@ -44,59 +41,58 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         this.gson = gson;
     }
 
-
-    @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId) throws EddException {
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, null, emitterId);
-        sendEventFlow(eventFlowRequestDto);
-    }
-
-
-    @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMailPayload payload) throws EddException {
-        JsonObject data = new JsonObject();
-        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
-            throw new EddException("email is missing");
-        }
-        data.addProperty("email", payload.getEmail());
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
-    }
-
-    private void signalInternal(Long eventflowId, String stepNodeId, String emitterId, Map<String , String> extraFields, JsonObject data ) throws EddException {
+    private void signalInternal(String stepNodeId, String emitterId, Map<String, String> extraFields, JsonObject data, UUID identifier) throws EddException {
         for (Map.Entry<String, String> extra : extraFields.entrySet()) {
             data.addProperty(extra.getKey(), extra.getValue());
         }
 
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
-        sendEventFlow(eventFlowRequestDto);
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, data, emitterId);
+        sendEventFlow(eventFlowRequestDto, identifier);
     }
 
     @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, StartEventPayload payload) throws EddException {
+    public void signal(UUID identifier, String stepNodeId, String emitterId) throws EddException {
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, null, emitterId);
+        sendEventFlow(eventFlowRequestDto, identifier);
+    }
+
+    @Override
+    public void signal(UUID identifier, String stepNodeId, String emitterId, StartEventPayload payload) throws EddException {
         JsonObject data = new JsonObject();
         if (payload.getEmail() == null || payload.getEmail().isBlank()) {
             data.addProperty("email", payload.getEmail());
         }
-        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
-            data.addProperty("phone_number", payload.getEmail());
-        }
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
 
+        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
+            throw new EddException("phone number is missing");
+        }
+        data.addProperty("phone_number", payload.getPhoneNumber());
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
     @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMessagePayload payload) throws EddException {
+    public void signal(UUID identifier, String stepNodeId, String emitterId, SignalMessagePayload payload) throws EddException {
         JsonObject data = new JsonObject();
         if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
             throw new EddException("phone number is missing");
         }
         data.addProperty("phone_number", payload.getPhoneNumber());
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
-    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) throws EddException {
+    @Override
+    public void signal(UUID identifier, String stepNodeId, String emitterId, SignalMailPayload payload) throws EddException {
+        JsonObject data = new JsonObject();
+        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
+            throw new EddException("phone number is missing");
+        }
+        data.addProperty("email", payload.getEmail());
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+    }
+
+    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto, UUID identifier) throws EddException {
         try {
-            Call<Void> repos = service.sendEvent("Bearer " + apiKey, eventFlowRequestDto);
+            Call<Void> repos = selectApi(identifier, eventFlowRequestDto);
             Response<Void> response = repos.execute();
             if (!response.isSuccessful()) {
                 String responseAsString = null;
@@ -119,5 +115,9 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         } catch (IOException | EddException e) {
             throw new EddException(e);
         }
+    }
+
+    private Call<Void> selectApi (UUID identifier, EventFlowRequestDto eventFlowRequestDto) throws EddException {
+        return service.sendEventByIdentifier("Bearer " + apiKey, identifier, eventFlowRequestDto);
     }
 }

@@ -1,7 +1,6 @@
 package com.kursaha.engagedatadrive.dto;
 
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -10,8 +9,6 @@ import lombok.NonNull;
  */
 @Data
 public class EventFlowRequestDto {
-    @NonNull
-    private final Long eventflowId;
     @NonNull
     private final String stepNodeId;
     private final JsonObject data;
