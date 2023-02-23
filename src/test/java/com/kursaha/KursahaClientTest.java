@@ -27,14 +27,7 @@ class KursahaClientTest {
     @Test
     @Disabled("use to test endpoints")
     public void testStartWorkflow() throws Exception {
-        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_IO>", emitterId);
-    }
-
-    @Test
-    @Disabled("use to test endpoints")
-    public void testSignalMail() throws Exception {
-        SignalMailPayload payload = new SignalMailPayload("example@mail.com");
-        kursahaClient.edd.signal(-1L /* WorkflowId */, "<STEP_NODE_ID>", emitterId, payload);
+        kursahaClient.edd.signal(UUID.randomUUID() /* WorkflowIdentifier */, "<STEP_NODE_IO>", emitterId);
     }
 
     @Test

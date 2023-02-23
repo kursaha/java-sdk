@@ -21,7 +21,6 @@ import java.util.UUID;
  */
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
-    // event Id
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
@@ -29,7 +28,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     /**
      * Constructor of EngageDataDriveClientImpl
      * @param credentials customer credential
-     * @param gson ""
+     * @param gson object of Gson
      * @param baseUrl baseurl of api
      */
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl) {
@@ -42,59 +41,18 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         this.gson = gson;
     }
 
-
-    @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId) throws EddException {
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, null, emitterId);
-        sendEventFlow(eventFlowRequestDto, null);
-    }
-
-
-    @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMailPayload payload) throws EddException {
-        JsonObject data = new JsonObject();
-        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
-            throw new EddException("email is missing");
-        }
-        data.addProperty("email", payload.getEmail());
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data, null);
-    }
-
-    private void signalInternal(Long eventflowId, String stepNodeId, String emitterId, Map<String, String> extraFields, JsonObject data, UUID identifier) throws EddException {
+    private void signalInternal(String stepNodeId, String emitterId, Map<String, String> extraFields, JsonObject data, UUID identifier) throws EddException {
         for (Map.Entry<String, String> extra : extraFields.entrySet()) {
             data.addProperty(extra.getKey(), extra.getValue());
         }
 
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(eventflowId, stepNodeId, data, emitterId);
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, data, emitterId);
         sendEventFlow(eventFlowRequestDto, identifier);
     }
 
     @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, StartEventPayload payload) throws EddException {
-        JsonObject data = new JsonObject();
-        if (payload.getEmail() == null || payload.getEmail().isBlank()) {
-            data.addProperty("email", payload.getEmail());
-        }
-        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
-            data.addProperty("phone_number", payload.getEmail());
-        }
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data, null);
-
-    }
-
-    @Override
-    public void signal(Long eventflowId, String stepNodeId, String emitterId, SignalMessagePayload payload) throws EddException {
-        JsonObject data = new JsonObject();
-        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
-            throw new EddException("phone number is missing");
-        }
-        data.addProperty("phone_number", payload.getPhoneNumber());
-        signalInternal(eventflowId, stepNodeId, emitterId, payload.getExtraFields(), data, null);
-    }
-
-    @Override
     public void signal(UUID identifier, String stepNodeId, String emitterId) throws EddException {
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(null, stepNodeId, null, emitterId);
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, null, emitterId);
         sendEventFlow(eventFlowRequestDto, identifier);
     }
 
@@ -109,7 +67,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new EddException("phone number is missing");
         }
         data.addProperty("phone_number", payload.getPhoneNumber());
-        signalInternal(null, stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
     @Override
@@ -119,7 +77,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new EddException("phone number is missing");
         }
         data.addProperty("phone_number", payload.getPhoneNumber());
-        signalInternal(null, stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
     @Override
@@ -129,7 +87,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new EddException("phone number is missing");
         }
         data.addProperty("email", payload.getEmail());
-        signalInternal(null, stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
     private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto, UUID identifier) throws EddException {
@@ -160,11 +118,6 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     private Call<Void> selectApi (UUID identifier, EventFlowRequestDto eventFlowRequestDto) throws EddException {
-        if (eventFlowRequestDto.getEventflowId() != null) {
-            return service.sendEvent("Bearer " + apiKey, eventFlowRequestDto);
-        } else if (identifier != null) {
-            return service.sendEventByIdentifier("Bearer " + apiKey, identifier, eventFlowRequestDto);
-        }
-        throw new EddException("id or identifier can not be null at same time");
+        return service.sendEventByIdentifier("Bearer " + apiKey, identifier, eventFlowRequestDto);
     }
 }
