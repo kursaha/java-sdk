@@ -5,7 +5,11 @@ plugins {
 }
 
 group = "com.kursaha"
-version '0.0.4'
+version '0.0.5'
+
+sourceCompatibility=11
+targetCompatibility=11
+assert System.properties["java.specification.version"] == "11" || "12" || "13" || "14" || "15" || "16" || "17" || "18"
 
 repositories {
     mavenCentral()

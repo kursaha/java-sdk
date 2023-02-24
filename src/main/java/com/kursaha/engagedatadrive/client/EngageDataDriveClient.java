@@ -25,7 +25,7 @@ public interface EngageDataDriveClient {
     ) throws EddException;
 
     /**
-     * Method is used to signal a mail-event-flow if query in not provided in the event flow node in the graph
+     * Method is used to signal a mail-event-flow if query is not provided in the event flow node in the graph
      *
      * @param identifier    identifier of the event flow
      * @param stepNodeId     id of the step event
@@ -41,7 +41,7 @@ public interface EngageDataDriveClient {
     ) throws EddException;
 
     /**
-     * Method is used to start an event-flow if query in not provided in the event flow node in the graph
+     * Method is used to start an event-flow if query is not provided in the event flow node in the graph
      *
      * @param identifier    identifier of the event flow
      * @param stepNodeId     id of the step event
@@ -57,7 +57,7 @@ public interface EngageDataDriveClient {
     ) throws EddException;
 
     /**
-     * Method is used to start a message-event-flow if query in not provided in the event flow node in the graph
+     * Method is used to start a message-event-flow if query is not provided in the event flow node in the graph
      *
      * @param identifier    identifier of the event flow
      * @param stepNodeId     id of the step event
