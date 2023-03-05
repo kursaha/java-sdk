@@ -3,7 +3,7 @@ package com.kursaha.engagedatadrive.client;
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
 import com.kursaha.engagedatadrive.dto.StartEventPayload;
-import com.kursaha.engagedatadrive.exception.EddException;
+
 import java.util.UUID;
 
 /**
@@ -16,13 +16,13 @@ public interface EngageDataDriveClient {
      * @param identifier id of the whole event
      * @param stepNodeId  id of the step event
      * @param emitterId   unique Id of the user
-     * @throws EddException if fails
+     * @return String identifier to trace the request
      */
-    void signal(
+    String signal(
             UUID identifier,
             String stepNodeId,
             String emitterId
-    ) throws EddException;
+    );
 
     /**
      * Method is used to signal a mail-event-flow if query is not provided in the event flow node in the graph
@@ -31,14 +31,14 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload        mail data
-     * @throws EddException if fails
+     * @return String identifier to trace the request
      */
-    void signal(
+    String signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
             SignalMailPayload payload
-    ) throws EddException;
+    );
 
     /**
      * Method is used to start an event-flow if query is not provided in the event flow node in the graph
@@ -47,14 +47,14 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload mail data
-     * @throws EddException if fails
+     * @return String identifier to trace the request
      */
-    void signal(
+    String signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
             StartEventPayload payload
-    ) throws EddException;
+    );
 
     /**
      * Method is used to start a message-event-flow if query is not provided in the event flow node in the graph
@@ -63,12 +63,12 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload        message data
-     * @throws EddException if fails
+     * @return String identifier to trace the request
      */
-    void signal(
+    String signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
             SignalMessagePayload payload
-    ) throws EddException;
+    );
 }

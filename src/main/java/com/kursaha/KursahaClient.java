@@ -6,6 +6,9 @@ import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.client.MailkeetsClientImpl;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * Client to hold various services
  */
@@ -24,23 +27,33 @@ public class KursahaClient {
     public final EngageDataDriveClient edd;
 
     /**
-     * Constructor
-     *
-     * @param apiKey string key
+     * Number of threads use to execute the request default to 1
      */
-    public KursahaClient(String apiKey) {
-        Gson gson = new Gson();
-        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, MAILKEETS_BASE_URL);
-        this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, EDD_BASE_URL);
-    }
+    private final int numThreadExecutor;
+
     /**
      * Constructor
      *
      * @param apiKey string key
      */
-    KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl) {
+    public KursahaClient(String apiKey) {
+        this(apiKey, 1);
+    }
+
+    public KursahaClient(String apiKey, int nThread) {
+        this(apiKey, EDD_BASE_URL, MAILKEETS_BASE_URL, nThread);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param apiKey string key
+     */
+    KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl, int nThread) {
+        this.numThreadExecutor = nThread;
         Gson gson = new Gson();
-        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl);
-        this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl);
+        Executor executor = Executors.newFixedThreadPool(nThread);
+        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl,executor);
+        this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, executor);
     }
 }

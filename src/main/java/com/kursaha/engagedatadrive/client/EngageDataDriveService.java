@@ -13,7 +13,7 @@ public interface EngageDataDriveService {
     /**
      * Request to execute send-event api
      * @param apiKey user api key
-     * @param identifier identifier for the event flow graph
+     * @param graphIdentifier identifier for the event flow graph
      * @param requestDto holds the payload
      * @return void type
      */
@@ -21,7 +21,7 @@ public interface EngageDataDriveService {
     @Headers({"Content-type: application/json"})
     Call<Void> sendEventByIdentifier(
             @Header("Authorization") String apiKey,
-            @Path("identifier") UUID identifier,
+            @Path("identifier") UUID graphIdentifier,
             @Body EventFlowRequestDto requestDto
     );
 }
