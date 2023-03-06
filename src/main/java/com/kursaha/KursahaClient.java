@@ -6,8 +6,7 @@ import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.client.MailkeetsClientImpl;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Client to hold various services
@@ -31,6 +30,10 @@ public class KursahaClient {
      */
     private final int numThreadExecutor;
 
+    private final ScheduledExecutorService executor;
+
+    private final Gson gson;
+
     /**
      * Constructor
      *
@@ -51,9 +54,13 @@ public class KursahaClient {
      */
     KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl, int nThread) {
         this.numThreadExecutor = nThread;
-        Gson gson = new Gson();
-        Executor executor = Executors.newFixedThreadPool(nThread);
+        this.gson = new Gson();
+        this.executor = Executors.newScheduledThreadPool(nThread);
         this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl,executor);
         this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, executor);
+    }
+
+    public void awaitTermination(long waitInMs) throws InterruptedException {
+        this.executor.awaitTermination(waitInMs, TimeUnit.MILLISECONDS);
     }
 }
