@@ -43,6 +43,11 @@ public class KursahaClient {
         this(apiKey, 1);
     }
 
+    /**
+     * Constructor
+     * @param apiKey string key
+     * @param nThread Number of threads use to execute the request
+     */
     public KursahaClient(String apiKey, int nThread) {
         this(apiKey, EDD_BASE_URL, MAILKEETS_BASE_URL, nThread);
     }
