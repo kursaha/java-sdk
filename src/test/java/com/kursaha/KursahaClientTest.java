@@ -1,7 +1,6 @@
 package com.kursaha;
 
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
-import com.kursaha.engagedatadrive.exception.EddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ class KursahaClientTest {
     @BeforeEach
     public void init() {
         kursahaClient = new KursahaClient(apiKey);
-        emitterId = "<UNIQUE_EMITTER_ID>";
+        emitterId = UUID.randomUUID().toString();
     }
 
     @Test
@@ -32,9 +31,9 @@ class KursahaClientTest {
 
     @Test
     @Disabled("use to test endpoints with identifier")
-    public void testGetIdByIdentifier() throws EddException {
-        UUID identifier = UUID.fromString("<UUID of eventFlow>");
-        SignalMailPayload payload = new SignalMailPayload("example@mail.com");
-        kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "<STEP_NODE_ID>", emitterId, payload);
+    public void testGetIdByIdentifier() throws InterruptedException {
+        UUID identifier = UUID.fromString("<UUID of EventFlow>");
+        SignalMailPayload payload = new SignalMailPayload("admin@example.com");
+        kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "<STEP_NODE_IO>", emitterId, payload);
     }
 }

@@ -2,8 +2,6 @@ package com.kursaha.mailkeets;
 
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.dto.MailRequestDto;
-import com.kursaha.mailkeets.dto.MailResponseDto;
-import com.kursaha.mailkeets.exception.MailkeetsSendMailException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 public class KursahaClientTest {
     private final MailkeetsClient mailkeetsClient = mock(MailkeetsClient.class);
-    private final String traceId = UUID.randomUUID().toString();
+    private final String requestIdentifier = UUID.randomUUID().toString();
     private MailRequestDto requestDto = null;
 
     private void prepare() {
@@ -24,7 +22,8 @@ public class KursahaClientTest {
                 "john@doe.com",
                 "hello@test.com",
                 "This is test subject",
-                "This is test body"
+                "This is test body",
+                requestIdentifier
         );
     }
     private void prepareError() {
@@ -33,20 +32,21 @@ public class KursahaClientTest {
                 "john@doe.com",
                 "hello@test.com",
                 "This is test subject",
-                "This is test body"
+                "This is test body",
+                requestIdentifier
         );
     }
 
     @Test
-    public void sendMailTest () throws MailkeetsSendMailException {
+    public void sendMailTest () {
         prepare();
         // mock
-        when(mailkeetsClient.sendMail(requestDto)).thenReturn(new MailResponseDto(traceId));
+        when(mailkeetsClient.sendMail(requestDto)).thenReturn(requestIdentifier);
         // play
-        MailResponseDto mailResponseDto = mailkeetsClient.sendMail(requestDto);
+        String identifier = mailkeetsClient.sendMail(requestDto);
         // check
-        Assertions.assertNotNull(mailResponseDto);
-        Assertions.assertEquals(traceId, mailResponseDto.getTraceId());
+        Assertions.assertNotNull(identifier);
+        Assertions.assertEquals(this.requestIdentifier, identifier);
     }
 
     @Test

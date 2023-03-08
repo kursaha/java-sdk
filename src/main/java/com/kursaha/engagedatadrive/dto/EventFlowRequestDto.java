@@ -14,5 +14,6 @@ public class EventFlowRequestDto {
     private final JsonObject data;
     @NonNull
     private final String emitterId;
-
+    @NonNull
+    private final String requestIdentifier;
 }

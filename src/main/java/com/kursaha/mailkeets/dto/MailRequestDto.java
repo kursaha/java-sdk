@@ -18,4 +18,6 @@ public class MailRequestDto {
     private final String subject;
     @NonNull
     private final String body;
+    @NonNull
+    private final String requestIdentifier;
 }
