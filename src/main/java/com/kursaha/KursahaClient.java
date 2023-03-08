@@ -58,9 +58,21 @@ public class KursahaClient {
         this.executor = Executors.newScheduledThreadPool(nThread);
         this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl,executor);
         this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, executor);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Checking if there is any message are pending to publish");
+            try {
+                KursahaClient.this.executor.shutdown();
+                boolean status = KursahaClient.this.executor.awaitTermination(30, TimeUnit.SECONDS);
+                if(status) {
+                    System.out.println("All messages sent successfully");
+                } else {
+                    System.err.println("Warning! Few messages might be dropped");
+                }
+            } catch (InterruptedException e) {
+                // ignore me.
+            }
+            System.out.println("Ready to shutdown Kursaha client");
+        }));
     }
 
-    public void awaitTermination(long waitInMs) throws InterruptedException {
-        this.executor.awaitTermination(waitInMs, TimeUnit.MILLISECONDS);
-    }
 }
