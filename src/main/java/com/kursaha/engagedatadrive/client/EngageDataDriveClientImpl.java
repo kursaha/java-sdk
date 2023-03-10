@@ -6,17 +6,18 @@ import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.engagedatadrive.dto.*;
 import com.kursaha.common.ErrorMessageDto;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
@@ -27,6 +28,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
+    private Stream<EventFlowRequestDto> dtoStream = Stream.empty();
 
     /**
      * Constructor of EngageDataDriveClientImpl
@@ -38,8 +40,14 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
      */
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl, Executor executor) {
         this.apiKey = credentials.getApiKey();
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
+                .client(client)
                 .callbackExecutor(executor)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -52,16 +60,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             data.addProperty(extra.getKey(), extra.getValue());
         }
         String requestIdentifier = UUID.randomUUID().toString();
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, data, emitterId, requestIdentifier);
-        sendEventFlow(eventFlowRequestDto, identifier);
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, data, emitterId, requestIdentifier, identifier.toString());
+        sendEventFlow(eventFlowRequestDto);
         return requestIdentifier;
     }
 
     @Override
     public String signal(UUID identifier, String stepNodeId, String emitterId) {
         String requestIdentifier = UUID.randomUUID().toString();
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, null, emitterId, requestIdentifier);
-        sendEventFlow(eventFlowRequestDto, identifier);
+        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, null, emitterId, requestIdentifier, identifier.toString());
+        sendEventFlow(eventFlowRequestDto);
         return requestIdentifier;
     }
 
@@ -98,8 +106,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         return signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
-    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto, UUID graphIdentifier) {
-        Call<Void> repos = selectApi(graphIdentifier, eventFlowRequestDto);
+    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) {
+//        Stream<List<Object>> listStream = CustomBatchIterator.batchStreamOf(data, 1000);
+        Call<Void> repos = selectApi(eventFlowRequestDto);
+//        try {
+//            if(!repos.isExecuted()) {
+//                repos.execute();
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         repos.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -131,7 +147,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         });
     }
 
-    private Call<Void> selectApi(UUID graphIdentifier, EventFlowRequestDto eventFlowRequestDto) {
-        return service.sendEventByIdentifier("Bearer " + apiKey, graphIdentifier, eventFlowRequestDto);
+    private Call<Void> selectApi(EventFlowRequestDto eventFlowRequestDto) {
+        return service.sendEventByIdentifier("Bearer " + apiKey, eventFlowRequestDto);
     }
 }

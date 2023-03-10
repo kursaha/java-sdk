@@ -15,11 +15,14 @@ class KursahaClientTest {
     private final String apiKey = System.getenv("key"); // Name of the Environment variable
     private KursahaClient kursahaClient;
 
+    private String mailkeetsBaseUrl = "http://localhost:8081/api/";
+    private String eddBaseUrl = "http://localhost:8082/api/";
+
     private String emitterId;
 
     @BeforeEach
     public void init() {
-        kursahaClient = new KursahaClient(apiKey);
+        kursahaClient = new KursahaClient(apiKey, eddBaseUrl, mailkeetsBaseUrl, 3);
         emitterId = UUID.randomUUID().toString();
     }
 
@@ -30,10 +33,31 @@ class KursahaClientTest {
     }
 
     @Test
-    @Disabled("use to test endpoints with identifier")
+//    @Disabled("use to test endpoints with identifier")
     public void testGetIdByIdentifier() throws InterruptedException {
-        UUID identifier = UUID.fromString("<UUID of EventFlow>");
-        SignalMailPayload payload = new SignalMailPayload("admin@example.com");
-        kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "<STEP_NODE_IO>", emitterId, payload);
+        for (int i=1; i<=5000; i++) {
+            emitterId = "Customer " + i;
+            UUID identifier = UUID.fromString("8a8d0206-2b1d-4433-9549-2d1c50857ac2");
+            SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
+            payload.addProperty("name", emitterId);
+            kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "start_event", emitterId, payload);
+//            if(i % 5 == 0) {
+////                Thread.sleep(10);
+////            }
+        }
+    }
+
+    @Test
+    public void testGetIdByIdentifier1() throws InterruptedException {
+        for (int i=101; i<=200; i++) {
+            emitterId = "Customer " + i;
+            UUID identifier = UUID.fromString("8a8d0206-2b1d-4433-9549-2d1c50857ac2");
+            SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
+            payload.addProperty("name", emitterId);
+            kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "start_event", emitterId, payload);
+            if(i % 5 == 0) {
+                Thread.sleep(1000);
+            }
+        }
     }
 }

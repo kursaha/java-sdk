@@ -3,7 +3,6 @@ package com.kursaha.engagedatadrive.dto;
 import com.google.gson.JsonObject;
 import lombok.Data;
 import lombok.NonNull;
-
 /**
  * EventFlowRequestDto holds the payload which is required for the EngageDataDriveService api
  */
@@ -16,4 +15,6 @@ public class EventFlowRequestDto {
     private final String emitterId;
     @NonNull
     private final String requestIdentifier;
+    @NonNull
+    private final String eventflowIdentifier;
 }
