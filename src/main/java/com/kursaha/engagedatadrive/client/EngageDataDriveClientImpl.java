@@ -60,16 +60,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             data.addProperty(extra.getKey(), extra.getValue());
         }
         String requestIdentifier = UUID.randomUUID().toString();
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, data, emitterId, requestIdentifier, identifier.toString());
-        sendEventFlow(eventFlowRequestDto);
+        EventFlowRequestDto.SignalPayload signalPayload = new EventFlowRequestDto.SignalPayload(emitterId, stepNodeId, data, requestIdentifier);
+        sendEventFlow(List.of(signalPayload), identifier);
         return requestIdentifier;
     }
 
     @Override
     public String signal(UUID identifier, String stepNodeId, String emitterId) {
         String requestIdentifier = UUID.randomUUID().toString();
-        EventFlowRequestDto eventFlowRequestDto = new EventFlowRequestDto(stepNodeId, null, emitterId, requestIdentifier, identifier.toString());
-        sendEventFlow(eventFlowRequestDto);
+        EventFlowRequestDto.SignalPayload signalPayload = new EventFlowRequestDto.SignalPayload(emitterId, stepNodeId, null, requestIdentifier);
+        sendEventFlow(List.of(signalPayload), identifier);
         return requestIdentifier;
     }
 
@@ -106,9 +106,9 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         return signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
-    private void sendEventFlow(EventFlowRequestDto eventFlowRequestDto) {
+    private void sendEventFlow(List<EventFlowRequestDto.SignalPayload> signals, UUID requestIdentifier) {
 //        Stream<List<Object>> listStream = CustomBatchIterator.batchStreamOf(data, 1000);
-        Call<Void> repos = selectApi(eventFlowRequestDto);
+        Call<Void> repos = selectApi(signals, requestIdentifier);
 //        try {
 //            if(!repos.isExecuted()) {
 //                repos.execute();
@@ -147,7 +147,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         });
     }
 
-    private Call<Void> selectApi(EventFlowRequestDto eventFlowRequestDto) {
-        return service.sendEventByIdentifier("Bearer " + apiKey, eventFlowRequestDto);
+    private Call<Void> selectApi(List<EventFlowRequestDto.SignalPayload> signals, UUID requestIdentifier) {
+        EventFlowRequestDto requestDto = new EventFlowRequestDto(requestIdentifier.toString(), signals);
+        return service.sendEventByIdentifier("Bearer " + apiKey, requestDto);
     }
 }
