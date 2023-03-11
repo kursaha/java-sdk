@@ -2,22 +2,13 @@ package com.kursaha.engagedatadrive.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
+import com.kursaha.config.QueueManagement;
 import com.kursaha.engagedatadrive.dto.*;
-import com.kursaha.common.ErrorMessageDto;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.logging.Level;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
@@ -26,9 +17,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     private static final Logger LOGGER = Logger.getLogger(EngageDataDriveClientImpl.class.getName());
     private final String apiKey;
+    private final String baseUrl;
     private final EngageDataDriveService service;
     private final Gson gson;
-    private Stream<EventFlowRequestDto> dtoStream = Stream.empty();
+    private ConcurrentLinkedDeque<EventFlowRequestDto.SignalPayload> dtoqueue = new ConcurrentLinkedDeque<>();
+
+    private QueueManagement<EventFlowRequestDto.SignalPayload> queueManagement;
+
+    private static boolean firstStep = true;
+
+    private ScheduledThreadPoolExecutor executor;
 
     /**
      * Constructor of EngageDataDriveClientImpl
@@ -40,19 +38,12 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
      */
     public EngageDataDriveClientImpl(Credentials credentials, Gson gson, String baseUrl, Executor executor) {
         this.apiKey = credentials.getApiKey();
-
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(client)
-                .callbackExecutor(executor)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        service = retrofit.create(EngageDataDriveService.class);
+        this.baseUrl = baseUrl;
+        service = new EngageDataDriveService();
         this.gson = gson;
+
+        this.executor = new ScheduledThreadPoolExecutor(1);
+        this.queueManagement = new QueueManagement<>(5, dtoqueue);
     }
 
     private String signalInternal(String stepNodeId, String emitterId, Map<String, String> extraFields, JsonObject data, UUID identifier) {
@@ -61,7 +52,22 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         }
         String requestIdentifier = UUID.randomUUID().toString();
         EventFlowRequestDto.SignalPayload signalPayload = new EventFlowRequestDto.SignalPayload(emitterId, stepNodeId, data, requestIdentifier);
-        sendEventFlow(List.of(signalPayload), identifier);
+
+        checkQueue(signalPayload);
+
+//        dtoqueue.add(signalPayload);
+
+        if(firstStep) {
+           schedule(identifier);
+            executor.scheduleWithFixedDelay(queueManagement, 0, 1, TimeUnit.MICROSECONDS);
+        }
+
+        if(executor.isShutdown()) {
+            schedule(identifier);
+            executor.scheduleWithFixedDelay(queueManagement, 0, 1, TimeUnit.MICROSECONDS);
+        }
+
+        firstStep = false;
         return requestIdentifier;
     }
 
@@ -107,48 +113,35 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     private void sendEventFlow(List<EventFlowRequestDto.SignalPayload> signals, UUID requestIdentifier) {
-//        Stream<List<Object>> listStream = CustomBatchIterator.batchStreamOf(data, 1000);
-        Call<Void> repos = selectApi(signals, requestIdentifier);
-//        try {
-//            if(!repos.isExecuted()) {
-//                repos.execute();
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-        repos.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (!response.isSuccessful()) {
-                    String responseAsString = null;
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        for (int ch; (ch = response.errorBody().charStream().read()) != -1; ) {
-                            sb.append((char) ch);
-                        }
-                        responseAsString = sb.toString();
-                        ErrorMessageDto errorResponse = gson.fromJson(responseAsString, ErrorMessageDto.class);
-                        LOGGER.log(Level.SEVERE, "Failed to execute request", errorResponse);
-                    } catch (JsonSyntaxException jse) {
-                        if (responseAsString != null) {
-                            LOGGER.log(Level.SEVERE, "Failed to execute request", responseAsString);
-                        }
-                    } catch (Exception ex) {
-                        LOGGER.log(Level.SEVERE, "Failed to execute request", ex);
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                LOGGER.log(Level.SEVERE, "Failed to execute request", t);
-            }
-        });
-    }
-
-    private Call<Void> selectApi(List<EventFlowRequestDto.SignalPayload> signals, UUID requestIdentifier) {
         EventFlowRequestDto requestDto = new EventFlowRequestDto(requestIdentifier.toString(), signals);
-        return service.sendEventByIdentifier("Bearer " + apiKey, requestDto);
+        try {
+            service.sendEventByIdentifier("Bearer " + apiKey, requestDto, baseUrl);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    private void schedule(UUID identifier) {
+        executor.scheduleAtFixedRate(() -> {
+            List<EventFlowRequestDto.SignalPayload> signalPayloads = new ArrayList<>(dtoqueue);
+            sendEventFlow(signalPayloads, identifier);
+            for (int i = 0; i < signalPayloads.size(); i++) {
+                dtoqueue.poll();
+            }
+        }, 0, 1, TimeUnit.MILLISECONDS);
+    }
+
+    private void checkQueue(EventFlowRequestDto.SignalPayload signalPayload) {
+        synchronized (dtoqueue) {
+            if(dtoqueue.size() > 500) {
+                try {
+                    dtoqueue.wait(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            dtoqueue.add(signalPayload);
+        }
+    }
+
 }

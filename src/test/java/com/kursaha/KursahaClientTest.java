@@ -35,16 +35,17 @@ class KursahaClientTest {
     @Test
 //    @Disabled("use to test endpoints with identifier")
     public void testGetIdByIdentifier() throws InterruptedException {
-        for (int i=1; i<=5000; i++) {
+        UUID identifier = UUID.fromString("8a8d0206-2b1d-4433-9549-2d1c50857ac2");
+        for (int i=1; i<=1000; i++) {
             emitterId = "Customer " + i;
-            UUID identifier = UUID.fromString("8a8d0206-2b1d-4433-9549-2d1c50857ac2");
             SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
             payload.addProperty("name", emitterId);
             kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "start_event", emitterId, payload);
-//            if(i % 5 == 0) {
-////                Thread.sleep(10);
-////            }
+            System.out.println(i);
         }
+
+//        kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "start_event", emitterId, payload);
+
     }
 
     @Test

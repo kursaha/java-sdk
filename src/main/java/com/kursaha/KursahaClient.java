@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClient;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
-import com.kursaha.mailkeets.client.MailkeetsClientImpl;
+//import com.kursaha.mailkeets.client.MailkeetsClientImpl;
 
 import java.util.concurrent.*;
 
@@ -18,7 +18,7 @@ public class KursahaClient {
     /**
      * Mailkeets client
      */
-    public final MailkeetsClient mk;
+//    public final MailkeetsClient mk;
 
     /**
      * Kursaha client
@@ -61,23 +61,23 @@ public class KursahaClient {
         this.numThreadExecutor = nThread;
         this.gson = new Gson();
         this.executor = Executors.newScheduledThreadPool(nThread);
-        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl,executor);
+//        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl,executor);
         this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, executor);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Checking if there is any message are pending to publish");
-            try {
-                KursahaClient.this.executor.shutdown();
-                boolean status = KursahaClient.this.executor.awaitTermination(30, TimeUnit.SECONDS);
-                if(status) {
-                    System.out.println("All messages sent successfully");
-                } else {
-                    System.err.println("Warning! Few messages might be dropped");
-                }
-            } catch (InterruptedException e) {
-                // ignore me.
-            }
-            System.out.println("Ready to shutdown Kursaha client");
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            System.out.println("Checking if there is any message are pending to publish");
+//            try {
+//                KursahaClient.this.executor.shutdown();
+//                boolean status = KursahaClient.this.executor.awaitTermination(30, TimeUnit.SECONDS);
+//                if(status) {
+//                    System.out.println("All messages sent successfully");
+//                } else {
+//                    System.err.println("Warning! Few messages might be dropped");
+//                }
+//            } catch (InterruptedException e) {
+//                // ignore me.
+//            }
+//            System.out.println("Ready to shutdown Kursaha client");
+//        }));
     }
 
 }
