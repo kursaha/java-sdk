@@ -4,10 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.kursaha.Credentials;
 import com.kursaha.config.QueueManagement;
-import com.kursaha.engagedatadrive.dto.*;
+import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.SignalMailPayload;
+import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
+import com.kursaha.engagedatadrive.dto.StartEventPayload;
+
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -42,8 +52,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         service = new EngageDataDriveService();
         this.gson = gson;
 
-        this.executor = new ScheduledThreadPoolExecutor(1);
-        this.queueManagement = new QueueManagement<>(5, dtoqueue);
+        this.executor = new ScheduledThreadPoolExecutor(5);
+        this.queueManagement = new QueueManagement<>(3, dtoqueue);
     }
 
     private String signalInternal(String stepNodeId, String emitterId, Map<String, String> extraFields, JsonObject data, UUID identifier) {
@@ -53,19 +63,21 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         String requestIdentifier = UUID.randomUUID().toString();
         EventFlowRequestDto.SignalPayload signalPayload = new EventFlowRequestDto.SignalPayload(emitterId, stepNodeId, data, requestIdentifier);
 
+        // add data into queue
         checkQueue(signalPayload);
 
-//        dtoqueue.add(signalPayload);
-
-        if(firstStep) {
-           schedule(identifier);
-            executor.scheduleWithFixedDelay(queueManagement, 0, 1, TimeUnit.MICROSECONDS);
-        }
-
-        if(executor.isShutdown()) {
+        // check if the data which will be inserted is the first time or not.
+        if (firstStep) {
+            // start the scheduler
             schedule(identifier);
+            // also start the queueManagement
             executor.scheduleWithFixedDelay(queueManagement, 0, 1, TimeUnit.MICROSECONDS);
         }
+
+//        if (executor.isShutdown()) {
+//            schedule(identifier);
+//            executor.scheduleWithFixedDelay(queueManagement, 0, 1, TimeUnit.MICROSECONDS);
+//        }
 
         firstStep = false;
         return requestIdentifier;
@@ -121,21 +133,28 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         }
     }
 
+    // schedule method that runs every microsecond
     private void schedule(UUID identifier) {
-        executor.scheduleAtFixedRate(() -> {
+        executor.scheduleWithFixedDelay(() -> {
+            // collects all data from queue and store it to arraylist
             List<EventFlowRequestDto.SignalPayload> signalPayloads = new ArrayList<>(dtoqueue);
+
+            //send data
             sendEventFlow(signalPayloads, identifier);
+
+            // delete the data from queue
             for (int i = 0; i < signalPayloads.size(); i++) {
                 dtoqueue.poll();
             }
-        }, 0, 1, TimeUnit.MILLISECONDS);
+        }, 0, 1, TimeUnit.MICROSECONDS);
     }
 
     private void checkQueue(EventFlowRequestDto.SignalPayload signalPayload) {
+        // check the queue size. If size is greater than 500, wait for 2 second otherwise add data into queue.
         synchronized (dtoqueue) {
-            if(dtoqueue.size() > 500) {
+            if (dtoqueue.size() > 500) {
                 try {
-                    dtoqueue.wait(5000);
+                    dtoqueue.wait(2000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

@@ -2,6 +2,9 @@ package com.kursaha.config;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+/**
+ * Count Queue class counts the queue size. If Queue size less than 500, it notifies all threads.
+ */
 public class CountQueue<T> implements Runnable{
 
     //    private static int count = 0;

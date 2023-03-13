@@ -4,6 +4,10 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * QueueManagement is a class that breaks the ScheduledThreadPoolExecutor.scheduleWithFixedDelay. It breaks the
+ * "circular-wait" deadlock condition. If scheduleWithFixedDelay runs for a "maxRunCount" time, it interrupts the executor.
+ */
 public class QueueManagement<T> implements Runnable {
     private final AtomicInteger runCount = new AtomicInteger();
     private final CountQueue<T> countQueue;
