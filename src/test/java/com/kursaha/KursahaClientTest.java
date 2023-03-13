@@ -27,8 +27,8 @@ class KursahaClientTest {
     public void testStartWorkflow() throws Exception {
         UUID identifier = UUID.fromString("abdd6d04-c9f6-448c-9d26-4dc0d9e8b7e2");
 
-        for (int i = 0; i < 100; i++) {
-            emitterId = "Customer1_n_" + i;
+        for (int i = 0; i < 5000; i++) {
+            emitterId = "Ausvsa2bv2_n_" + i;
             SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
             kursahaClient.edd.signal(identifier, "start_event", emitterId, payload);
         }
