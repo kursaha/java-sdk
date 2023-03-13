@@ -5,7 +5,6 @@ import com.kursaha.engagedatadrive.client.EngageDataDriveClient;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.client.MailkeetsClientImpl;
-
 import java.util.concurrent.*;
 
 /**
@@ -67,7 +66,7 @@ public class KursahaClient {
             System.out.println("Checking if there is any message are pending to publish");
             try {
                 KursahaClient.this.executor.shutdown();
-                boolean status = KursahaClient.this.executor.awaitTermination(30, TimeUnit.SECONDS);
+                boolean status = KursahaClient.this.executor.awaitTermination(10, TimeUnit.SECONDS);
                 if(status) {
                     System.out.println("All messages sent successfully");
                 } else {
