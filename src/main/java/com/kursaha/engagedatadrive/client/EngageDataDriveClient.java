@@ -16,9 +16,8 @@ public interface EngageDataDriveClient {
      * @param identifier id of the whole event
      * @param stepNodeId  id of the step event
      * @param emitterId   unique Id of the user
-     * @return String identifier to trace the request
      */
-    String signal(
+    void signal(
             UUID identifier,
             String stepNodeId,
             String emitterId
@@ -31,9 +30,8 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload        mail data
-     * @return String identifier to trace the request
      */
-    String signal(
+    void signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
@@ -49,7 +47,7 @@ public interface EngageDataDriveClient {
      * @param payload mail data
      * @return String identifier to trace the request
      */
-    String signal(
+    void signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
@@ -65,10 +63,12 @@ public interface EngageDataDriveClient {
      * @param payload        message data
      * @return String identifier to trace the request
      */
-    String signal(
+    void signal(
             UUID identifier,
             String stepNodeId,
             String emitterId,
             SignalMessagePayload payload
     );
+
+    boolean hasSignals();
 }

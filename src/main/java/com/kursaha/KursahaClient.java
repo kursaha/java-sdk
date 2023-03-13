@@ -72,13 +72,14 @@ public class KursahaClient {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println(Instant.now() +  ": Checking if there is any message are pending.");
             try {
+                while (this.edd.hasSignals()) {
+                    Thread.sleep(5_000L);
+                }
+
                 while (dispatcher.queuedCallsCount() != 0 && dispatcher.runningCallsCount() != 0) {
                     System.out.println("Queue message count: " + dispatcher.queuedCallsCount());
                     System.out.println("Running message count: " + dispatcher.runningCallsCount());
-                    boolean status = KursahaClient.this.executorService.awaitTermination(5, TimeUnit.SECONDS);
-                    if(!status) {
-                        System.err.println(Instant.now() +  ": Warning! Few messages might be dropped from dispatcher.");
-                    }
+                    Thread.sleep(5_000L);
                 }
                 KursahaClient.this.executorService.shutdown();
                 boolean status = KursahaClient.this.executorService.awaitTermination(30, TimeUnit.SECONDS);
