@@ -29,14 +29,7 @@ public class KursahaClient {
      */
     public final EngageDataDriveClient edd;
 
-    /**
-     * Number of threads use to execute the request default to 1
-     */
-    private final int numThreadExecutor;
-
     private final ScheduledExecutorService executorService;
-
-    private final Gson gson;
 
     /**
      * Constructor
@@ -62,14 +55,11 @@ public class KursahaClient {
      * @param apiKey string key
      */
     KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl, int nThread) {
-        this.numThreadExecutor = nThread;
-        this.gson = new Gson();
+        Gson gson = new Gson();
         this.executorService = Executors.newScheduledThreadPool(nThread);
 
-
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
+        interceptor.level(HttpLoggingInterceptor.Level.NONE);
         Dispatcher dispatcher = new Dispatcher(executorService);
 
         OkHttpClient okHttpClient =
@@ -77,7 +67,7 @@ public class KursahaClient {
                         .dispatcher(dispatcher)
                         .addInterceptor(interceptor).build();
 
-        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl, executorService);
+        this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl, okHttpClient);
         this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, okHttpClient);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println(Instant.now() +  ": Checking if there is any message are pending.");
@@ -85,7 +75,10 @@ public class KursahaClient {
                 while (dispatcher.queuedCallsCount() != 0 && dispatcher.runningCallsCount() != 0) {
                     System.out.println("Queue message count: " + dispatcher.queuedCallsCount());
                     System.out.println("Running message count: " + dispatcher.runningCallsCount());
-                    KursahaClient.this.executorService.awaitTermination(5, TimeUnit.SECONDS);
+                    boolean status = KursahaClient.this.executorService.awaitTermination(5, TimeUnit.SECONDS);
+                    if(!status) {
+                        System.err.println(Instant.now() +  ": Warning! Few messages might be dropped from dispatcher.");
+                    }
                 }
                 KursahaClient.this.executorService.shutdown();
                 boolean status = KursahaClient.this.executorService.awaitTermination(30, TimeUnit.SECONDS);

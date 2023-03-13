@@ -5,6 +5,7 @@ import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.Credentials;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,20 +27,19 @@ public class MailkeetsClientImpl implements MailkeetsClient {
     private final MailkeetsService service;
     private final Gson gson;
 
-
     /**
      * Constructor
      *
-     * @param credentials credentials object
-     * @param gson        ""
-     * @param baseUrl     baseurl of api
-     * @param executor    Executor used to process the API calls
+     * @param credentials  credentials object
+     * @param gson         json convertor
+     * @param baseUrl      baseurl of api
+     * @param okHttpClient OkHttp client
      */
-    public MailkeetsClientImpl(Credentials credentials, Gson gson, String baseUrl, Executor executor) {
+    public MailkeetsClientImpl(Credentials credentials, Gson gson, String baseUrl, OkHttpClient okHttpClient) {
         this.apiKey = credentials.getApiKey();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .callbackExecutor(executor)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(MailkeetsService.class);
