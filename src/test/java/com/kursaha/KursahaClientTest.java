@@ -12,7 +12,7 @@ class KursahaClientTest {
      * Create a unique api key from <a href="https://kursaha.com/engage-data-drive/api-key">API Key</a>.
      * After that, please add that api key into system environment.
      */
-    private final String apiKey = System.getenv("key"); // Name of the Environment variable
+    private final String apiKey = System.getenv("key");
     private KursahaClient kursahaClient;
 
     private String emitterId;
@@ -24,9 +24,14 @@ class KursahaClientTest {
     }
 
     @Test
-    @Disabled("use to test endpoints")
     public void testStartWorkflow() throws Exception {
-        kursahaClient.edd.signal(UUID.randomUUID() /* WorkflowIdentifier */, "<STEP_NODE_IO>", emitterId);
+        UUID identifier = UUID.fromString("abdd6d04-c9f6-448c-9d26-4dc0d9e8b7e2");
+
+        for (int i = 0; i < 100; i++) {
+            emitterId = "Customer1_n_" + i;
+            SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
+            kursahaClient.edd.signal(identifier, "start_event", emitterId, payload);
+        }
     }
 
     @Test
