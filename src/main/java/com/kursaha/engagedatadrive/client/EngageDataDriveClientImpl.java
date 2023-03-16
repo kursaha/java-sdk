@@ -39,6 +39,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private final Object syncObj = new Object();
     private final ConcurrentLinkedQueue<SignalPayload> signalHolder;
 
+    private volatile boolean processingMessages;
+
     /**
      * Constructor of EngageDataDriveClientImpl
      *
@@ -68,6 +70,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                 () -> {
                     while (true) {
                         if (!signalHolder.isEmpty()) {
+                            processingMessages = true;
                             List<SignalPayload> signals = new LinkedList<>();
                             int i = 0;
                             while (!signalHolder.isEmpty() && ++i < MAX_BATCH_SIZE) {
@@ -80,6 +83,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                                 sendEventFlow(signals);
                             }
                         } else {
+                            processingMessages = false;
                             try {
                                 synchronized (syncObj) {
                                     syncObj.wait(3_000L);
@@ -200,6 +204,6 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     @Override
     public boolean hasSignals() {
-        return !signalHolder.isEmpty();
+        return !signalHolder.isEmpty() || processingMessages;
     }
 }
