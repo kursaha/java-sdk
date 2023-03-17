@@ -45,7 +45,6 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload mail data
-     * @return String identifier to trace the request
      */
     void signal(
             UUID identifier,
@@ -61,7 +60,6 @@ public interface EngageDataDriveClient {
      * @param stepNodeId     id of the step event
      * @param emitterId      unique Id of the user
      * @param payload        message data
-     * @return String identifier to trace the request
      */
     void signal(
             UUID identifier,
@@ -70,5 +68,9 @@ public interface EngageDataDriveClient {
             SignalMessagePayload payload
     );
 
+    /**
+     *
+     * @return true, if there are any pending messages in the sdk to process
+     */
     boolean hasSignals();
 }

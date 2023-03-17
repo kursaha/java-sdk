@@ -13,7 +13,6 @@ public interface EngageDataDriveService {
     /**
      * Request to execute send-event api
      * @param apiKey user api key
-     * @param graphIdentifier identifier for the event flow graph
      * @param requestDto holds the payload
      * @return void type
      */

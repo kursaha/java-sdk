@@ -16,6 +16,9 @@ public class EventFlowRequestDto {
 
     private final List<SignalPayload> signals;
 
+    /**
+     * Signal message
+     */
     @Data
     public static final class SignalPayload {
         @NonNull
