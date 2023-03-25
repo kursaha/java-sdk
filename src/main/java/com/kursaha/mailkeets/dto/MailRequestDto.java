@@ -20,4 +20,6 @@ public class MailRequestDto {
     private final String body;
     @NonNull
     private final String requestIdentifier;
+    @NonNull
+    private final String unsubscribedList;
 }

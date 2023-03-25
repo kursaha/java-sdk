@@ -23,7 +23,8 @@ public class KursahaClientTest {
                 "hello@test.com",
                 "This is test subject",
                 "This is test body",
-                requestIdentifier
+                requestIdentifier,
+                ""
         );
     }
     private void prepareError() {
@@ -33,7 +34,8 @@ public class KursahaClientTest {
                 "hello@test.com",
                 "This is test subject",
                 "This is test body",
-                requestIdentifier
+                requestIdentifier,
+                ""
         );
     }
 
