@@ -89,7 +89,7 @@ public class MailkeetsClientImpl implements MailkeetsClient {
     public List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception{
         ErrorMessageDto errorResponse = new ErrorMessageDto();
         try {
-            Call<List<VerifiedDomainNameResponseDto>> repos = service.getAllVerifiedDomains("Bearer " + apiKey);
+            Call<List<VerifiedDomainNameResponseDto>> repos = service.getVerifiedDomains("Bearer " + apiKey);
             Response<List<VerifiedDomainNameResponseDto>> response = repos.execute();
             if (!response.isSuccessful()) {
                 String responseAsString = null;

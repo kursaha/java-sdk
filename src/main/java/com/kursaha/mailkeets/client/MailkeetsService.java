@@ -32,7 +32,7 @@ public interface MailkeetsService {
      */
     @GET("sender-identities/verified-domains")
     @Headers({"Content-type: application/json"})
-    Call<List<VerifiedDomainNameResponseDto>> getAllVerifiedDomains(
+    Call<List<VerifiedDomainNameResponseDto>> getVerifiedDomains(
             @Header("Authorization") String apiKey
     );
 }
