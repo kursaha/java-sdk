@@ -2,6 +2,7 @@ package com.kursaha.mailkeets.client;
 
 import com.google.gson.Gson;
 import com.kursaha.common.ErrorMessageDto;
+import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.Credentials;
@@ -11,9 +12,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,5 +83,28 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             }
         });
         return requestDto.getRequestIdentifier();
+    }
+
+    @Override
+    public List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception{
+        ErrorMessageDto errorResponse = new ErrorMessageDto();
+        try {
+            Call<List<VerifiedDomainNameResponseDto>> repos = service.getAllVerifiedDomains("Bearer " + apiKey);
+            Response<List<VerifiedDomainNameResponseDto>> response = repos.execute();
+            if (!response.isSuccessful()) {
+                String responseAsString = null;
+                StringBuilder sb = new StringBuilder();
+                for (int ch; (ch = response.errorBody().charStream().read()) != -1; ) {
+                    sb.append((char) ch);
+                }
+                responseAsString = sb.toString();
+                errorResponse = gson.fromJson(responseAsString, ErrorMessageDto.class);
+                LOGGER.log(Level.SEVERE, "failed to execute request", errorResponse);
+            }
+            return response.body();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "failed to execute request", errorResponse);
+            throw e;
+        }
     }
 }

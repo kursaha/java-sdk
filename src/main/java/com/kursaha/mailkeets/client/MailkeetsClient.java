@@ -1,7 +1,8 @@
 package com.kursaha.mailkeets.client;
 
+import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
 import com.kursaha.mailkeets.dto.MailRequestDto;
-
+import java.util.List;
 /**
  * Mailkeets client
  */
@@ -33,4 +34,10 @@ public interface MailkeetsClient {
      * @return String identifier to trace the request
      */
     String sendMail(MailRequestDto requestDto);
+
+    /**
+     * request to get all verified domain names
+     * @return list of verified domain names
+     */
+    List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception;
 }

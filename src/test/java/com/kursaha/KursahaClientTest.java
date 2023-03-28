@@ -25,10 +25,9 @@ class KursahaClientTest {
 
     @Test
     public void testStartWorkflow() throws Exception {
-        UUID identifier = UUID.fromString("abdd6d04-c9f6-448c-9d26-4dc0d9e8b7e2");
-
-        for (int i = 0; i < 5000; i++) {
-            emitterId = "Ausvsa2bv2_n_" + i;
+        UUID identifier = UUID.fromString("EventFlow Identifier");
+        for (int i = 0; i < 10; i++) {
+            emitterId = "Ausvsa2bv2_n_" + i + 100100L;
             SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
             kursahaClient.edd.signal(identifier, "start_event", emitterId, payload);
         }
@@ -40,5 +39,10 @@ class KursahaClientTest {
         UUID identifier = UUID.fromString("<UUID of EventFlow>");
         SignalMailPayload payload = new SignalMailPayload("admin@example.com");
         kursahaClient.edd.signal(identifier /* EventFlow Identifier */, "<STEP_NODE_IO>", emitterId, payload);
+    }
+
+    @Test
+    public void getAllVerifiedDomain() throws Exception {
+        System.out.println(kursahaClient.mk.getVerifiedDomains());
     }
 }
