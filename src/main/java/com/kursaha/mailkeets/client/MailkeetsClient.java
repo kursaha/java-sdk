@@ -38,6 +38,7 @@ public interface MailkeetsClient {
     /**
      * request to get all verified domain names
      * @return list of verified domain names
+     * @throws Exception if there is any error
      */
     List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception;
 }
