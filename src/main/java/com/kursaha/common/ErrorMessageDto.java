@@ -2,7 +2,6 @@ package com.kursaha.common;
 
 import com.google.gson.JsonArray;
 import lombok.Data;
-
 /**
  * Response in case of error
  */

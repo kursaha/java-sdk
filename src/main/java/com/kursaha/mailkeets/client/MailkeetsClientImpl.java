@@ -69,7 +69,7 @@ public class MailkeetsClientImpl implements MailkeetsClient {
                 if (!response.isSuccessful()) {
                     try {
                         ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
-                        LOGGER.log(Level.SEVERE, "failed to execute request", errorResponse);
+                        LOGGER.log(Level.SEVERE, "failed to execute request : " + errorResponse.getTitle());
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "failed to execute request", ex);
                     }
