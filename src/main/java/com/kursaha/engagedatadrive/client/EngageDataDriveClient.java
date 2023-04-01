@@ -5,6 +5,7 @@ import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
 import com.kursaha.engagedatadrive.dto.StartEventPayload;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -89,4 +90,11 @@ public interface EngageDataDriveClient {
      * @return true, if there are any pending messages in the sdk to process
      */
     boolean hasSignals();
+
+    /**
+     *
+     * @return true if able to connect to server with valid key
+     * @throws IOException on network error
+     */
+    boolean isConnectedAndAuthenticated() throws IOException;
 }

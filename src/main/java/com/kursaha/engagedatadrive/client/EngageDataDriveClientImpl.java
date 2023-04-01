@@ -14,10 +14,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -212,5 +210,10 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     @Override
     public boolean hasSignals() {
         return !signalHolder.isEmpty() || processingMessages;
+    }
+
+    @Override
+    public boolean isConnectedAndAuthenticated() throws IOException {
+        return Objects.equals(Objects.requireNonNull(service.ping("Bearer " + apiKey).execute().body()).getResponse(), "pong");
     }
 }

@@ -1,6 +1,7 @@
 package com.kursaha.engagedatadrive.client;
 
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.SdkPingResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 import java.util.UUID;
@@ -22,4 +23,15 @@ public interface EngageDataDriveService {
             @Header("Authorization") String apiKey,
             @Body EventFlowRequestDto requestDto
     );
+
+    /**
+     * Make call to server and ensure that the api key is valid
+     * @param apiKey api key
+     * @return true, if api key is valid
+     */
+    @GET("sdk/ping")
+    Call<SdkPingResponse> ping(
+            @Header("Authorization") String apiKey
+    );
+
 }
