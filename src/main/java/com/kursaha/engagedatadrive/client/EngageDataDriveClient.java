@@ -1,5 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
+import com.kursaha.engagedatadrive.dto.SignalFcmNotificationPayload;
 import com.kursaha.engagedatadrive.dto.SignalMailPayload;
 import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
 import com.kursaha.engagedatadrive.dto.StartEventPayload;
@@ -67,6 +68,21 @@ public interface EngageDataDriveClient {
             String emitterId,
             SignalMessagePayload payload
     );
+
+    /**
+     * Method is used to start a fcm-notification-event-flow if query is not provided in the event flow node in the graph
+     * @param identifier  identifier of the event flow
+     * @param stepNodeId  id of the step event
+     * @param emitterId  unique Id of the user
+     * @param payload  fcm notification data
+     */
+    void signal(
+            UUID identifier,
+            String stepNodeId,
+            String emitterId,
+            SignalFcmNotificationPayload payload
+    );
+
 
     /**
      *
