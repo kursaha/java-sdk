@@ -5,11 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.common.ErrorMessageDto;
-import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.*;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto.SignalPayload;
-import com.kursaha.engagedatadrive.dto.SignalMailPayload;
-import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
-import com.kursaha.engagedatadrive.dto.StartEventPayload;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -142,6 +139,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new RuntimeException("phone number is missing");
         }
         data.addProperty("phone_number", payload.getPhoneNumber());
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+    }
+
+    @Override
+    public void signal(UUID identifier, String stepNodeId, String emitterId, SignalFcmNotificationPayload payload) {
+        JsonObject data = new JsonObject();
+        if (payload.getFcmToken() == null || payload.getFcmToken().isBlank()) {
+            throw new RuntimeException("fcm token is missing");
+        }
+        data.addProperty("fcm_token", payload.getFcmToken());
         signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 
