@@ -8,6 +8,8 @@ import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.dto.*;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto.SignalPayload;
 import okhttp3.OkHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,8 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * EngageDataDriveClientImpl is a class that can handle Engage-data-drive api
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private static final int MAX_BATCH_SIZE = 500;
 
-    private static final Logger LOGGER = Logger.getLogger(EngageDataDriveClientImpl.class.getName());
+    private static final Logger LOGGER =  LoggerFactory.getLogger(EngageDataDriveClientImpl.class);
     private final String apiKey;
     private final EngageDataDriveService service;
     private final Gson gson;
@@ -84,7 +84,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                                     syncObj.wait(3_000L);
                                 }
                             } catch (InterruptedException e) {
-                                LOGGER.fine("got interrupt in wait");
+                                LOGGER.info("got interrupt in wait");
                                 // ignore me
                             }
                         }
@@ -100,6 +100,10 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             JsonObject data,
             UUID identifier
     ) {
+        emitterId = emitterId.trim();
+        if(emitterId.split(" ").length > 1) {
+            throw new RuntimeException("emitter id should not have any space");
+        }
         for (Map.Entry<String, String> extra : extraFields.entrySet()) {
             data.addProperty(extra.getKey(), extra.getValue());
         }
@@ -168,7 +172,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     private void sendEventFlow(List<SignalPayload> signals) {
-        LOGGER.fine("Sending signal for " + signals.size());
+        LOGGER.info("Sending signal for {}", signals.size());
         UUID requestIdentifier = UUID.randomUUID();
         EventFlowRequestDto requestDto = new EventFlowRequestDto(requestIdentifier.toString(), signals);
         Call<Void> repos = selectApi(requestDto);
@@ -184,13 +188,13 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                         }
                         responseAsString = sb.toString();
                         ErrorMessageDto errorResponse = gson.fromJson(responseAsString, ErrorMessageDto.class);
-                        LOGGER.log(Level.SEVERE, "Failed to execute request", errorResponse);
+                        LOGGER.error("Failed to execute request {}", errorResponse);
                     } catch (JsonSyntaxException jse) {
                         if (responseAsString != null) {
-                            LOGGER.log(Level.SEVERE, "Failed to execute request", responseAsString);
+                            LOGGER.error("Failed to execute request {}", responseAsString);
                         }
                     } catch (Exception ex) {
-                        LOGGER.log(Level.SEVERE, "Failed to execute request", ex);
+                        LOGGER.error("Failed to execute request {}", ex.getMessage());
                     }
                 }
 
@@ -198,7 +202,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                LOGGER.log(Level.SEVERE, "Failed to execute request", t);
+                LOGGER.error("Failed to execute request {}", t.getMessage());
             }
         });
     }
