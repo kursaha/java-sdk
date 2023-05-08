@@ -1,8 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.kursaha.Credentials;
 import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.dto.*;
@@ -15,7 +13,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -151,6 +148,27 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new RuntimeException("fcm token is missing");
         }
         data.addProperty("fcm_token", payload.getFcmToken());
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+    }
+
+    @Override
+    public void signal(UUID identifier, String stepNodeId, String emitterId, SignalInteraktWhatsappPayload payload) {
+        JsonObject data = new JsonObject();
+        if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
+            throw new RuntimeException("Phone Number is missing");
+        }
+        if (payload.getCountryCode() == null || payload.getCountryCode().isBlank()) {
+            throw new RuntimeException("Country code is missing");
+        }
+        data.addProperty("countryCode", payload.getCountryCode());
+        data.addProperty("phoneNumber", payload.getPhoneNumber());
+
+        if (payload.getBodyValues() != null) {
+            data.add("bodyValues", new JsonParser().parse(gson.toJson(payload.getBodyValues())).getAsJsonArray());
+        }
+        if (payload.getHeaderValues() != null) {
+            data.add("headerValues", new JsonParser().parse(gson.toJson(payload.getHeaderValues())).getAsJsonArray());
+        }
         signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
     }
 

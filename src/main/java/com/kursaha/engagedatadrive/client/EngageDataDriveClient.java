@@ -1,9 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
-import com.kursaha.engagedatadrive.dto.SignalFcmNotificationPayload;
-import com.kursaha.engagedatadrive.dto.SignalMailPayload;
-import com.kursaha.engagedatadrive.dto.SignalMessagePayload;
-import com.kursaha.engagedatadrive.dto.StartEventPayload;
+import com.kursaha.engagedatadrive.dto.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -82,6 +79,20 @@ public interface EngageDataDriveClient {
             String stepNodeId,
             String emitterId,
             SignalFcmNotificationPayload payload
+    );
+
+    /**
+     * Method is used to start a Interakt-whatsapp-event-flow if query is not provided in the event flow node in the graph
+     * @param identifier  identifier of the event flow
+     * @param stepNodeId  id of the step event
+     * @param emitterId  unique Id of the user
+     * @param payload  Interakt whatsapp data
+     */
+    void signal(
+            UUID identifier,
+            String stepNodeId,
+            String emitterId,
+            SignalInteraktWhatsappPayload payload
     );
 
 
