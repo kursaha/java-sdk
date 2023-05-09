@@ -19,6 +19,8 @@ public abstract class EventPayload {
 
     /**
      * dynamicSleepNode property
+     * sleepNodeId: { before:..., or after:... }
+     * time should be in Instant, '2011-12-03T10:15:30Z'
      */
     private final Map<String, Map<String, Instant>> dynamicSleepNode;
 
