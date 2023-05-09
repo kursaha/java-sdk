@@ -14,6 +14,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -95,7 +96,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             String emitterId,
             Map<String, String> extraFields,
             JsonObject data,
-            UUID identifier
+            UUID identifier,
+            Map<String, Map<String, Instant>> dynamicSleepNode /* sleepNodeId: { before:..., or after:... } */
     ) {
         emitterId = emitterId.trim();
         if(emitterId.split(" ").length > 1) {
@@ -104,6 +106,15 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         for (Map.Entry<String, String> extra : extraFields.entrySet()) {
             data.addProperty(extra.getKey(), extra.getValue());
         }
+
+        dynamicSleepNode.forEach((sleepNodeId, time) -> {
+            JsonObject jsonObject = new JsonObject();
+            time.forEach((key, value) -> {
+                jsonObject.addProperty(key, value.toString());
+            });
+            data.add(sleepNodeId, jsonObject);
+        });
+
         SignalPayload signalPayload =
                 new SignalPayload(emitterId, stepNodeId, data, identifier.toString());
 
@@ -128,7 +139,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         if (payload.getPhoneNumber() == null || payload.getPhoneNumber().isBlank()) {
             data.addProperty("phone_number", payload.getPhoneNumber());
         }
-        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
     @Override
@@ -138,7 +149,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new RuntimeException("phone number is missing");
         }
         data.addProperty("phone_number", payload.getPhoneNumber());
-        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
     @Override
@@ -148,7 +159,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new RuntimeException("fcm token is missing");
         }
         data.addProperty("fcm_token", payload.getFcmToken());
-        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
     @Override
@@ -169,7 +180,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         if (payload.getHeaderValues() != null) {
             data.add("headerValues", new JsonParser().parse(gson.toJson(payload.getHeaderValues())).getAsJsonArray());
         }
-        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
     @Override
@@ -179,7 +190,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             throw new RuntimeException("email is missing");
         }
         data.addProperty("email", payload.getEmail());
-        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier);
+        signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
     private void sendEventFlow(SignalPayload signals) {
