@@ -56,7 +56,7 @@ public abstract class EventPayload {
      */
     public void addAfterEventDateTime(String sleepNodeId, Instant afterTime) {
         Map<String, Instant> after = new HashMap<>();
-        after.put("beforeEventDateTime", afterTime);
+        after.put("afterEventDateTime", afterTime);
         dynamicSleepNode.put(sleepNodeId, after);
     }
 

@@ -97,7 +97,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             Map<String, String> extraFields,
             JsonObject data,
             UUID identifier,
-            Map<String, Map<String, Instant>> dynamicSleepNode
+            Map<String, Map<String, Instant>> dynamicSleepNode /* sleepNodeId: { before:..., or after:... } */
     ) {
         emitterId = emitterId.trim();
         if(emitterId.split(" ").length > 1) {
@@ -107,15 +107,13 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             data.addProperty(extra.getKey(), extra.getValue());
         }
 
-        JsonObject dynamicSleepTime = new JsonObject();
-        dynamicSleepNode.forEach((sleepNode, time) -> {
+        dynamicSleepNode.forEach((sleepNodeId, time) -> {
             JsonObject jsonObject = new JsonObject();
             time.forEach((key, value) -> {
                 jsonObject.addProperty(key, value.toString());
             });
-            dynamicSleepTime.add(sleepNode, jsonObject);
+            data.add(sleepNodeId, jsonObject);
         });
-        data.add("dynamicSleepTime", dynamicSleepTime);
 
         SignalPayload signalPayload =
                 new SignalPayload(emitterId, stepNodeId, data, identifier.toString());
