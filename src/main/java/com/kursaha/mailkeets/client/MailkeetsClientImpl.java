@@ -52,11 +52,12 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             String to,
             String from,
             String fromName,
+            String contentType,
             String body,
             String unsubscribedList
     ) {
         String requestIdentifier = UUID.randomUUID().toString();
-        MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, body, requestIdentifier, unsubscribedList);
+        MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, contentType, body, requestIdentifier, unsubscribedList);
         return sendMail(requestDto);
     }
 

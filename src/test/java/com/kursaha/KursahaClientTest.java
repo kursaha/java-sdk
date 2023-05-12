@@ -24,6 +24,7 @@ class KursahaClientTest {
     }
 
     @Test
+    @Disabled("use to test endpoints with identifier")
     public void testStartWorkflow() throws Exception {
         UUID identifier = UUID.fromString("EventFlow Identifier");
         for (int i = 0; i < 10; i++) {

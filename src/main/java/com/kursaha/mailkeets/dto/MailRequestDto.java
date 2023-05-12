@@ -17,6 +17,8 @@ public class MailRequestDto {
     @NonNull
     private final String subject;
     @NonNull
+    private final String contentType;
+    @NonNull
     private final String body;
     @NonNull
     private final String requestIdentifier;

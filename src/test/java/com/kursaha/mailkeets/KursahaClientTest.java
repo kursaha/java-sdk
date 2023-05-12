@@ -22,6 +22,7 @@ public class KursahaClientTest {
                 "john@doe.com",
                 "hello@test.com",
                 "This is test subject",
+                "text/plain",
                 "This is test body",
                 requestIdentifier,
                 ""
@@ -33,6 +34,7 @@ public class KursahaClientTest {
                 "john@doe.com",
                 "hello@test.com",
                 "This is test subject",
+                "text/plain",
                 "This is test body",
                 requestIdentifier,
                 ""
