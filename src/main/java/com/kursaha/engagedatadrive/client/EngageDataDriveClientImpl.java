@@ -94,7 +94,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private void signalInternal(
             String stepNodeId,
             String emitterId,
-            Map<String, String> extraFields,
+            Map<String, Object> extraFields,
             JsonObject data,
             UUID identifier,
             Map<String, Map<String, Instant>> dynamicSleepNode /* sleepNodeId: { before:..., or after:... } */
@@ -103,8 +103,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         if(emitterId.split(" ").length > 1) {
             throw new RuntimeException("emitter id should not have any space");
         }
-        for (Map.Entry<String, String> extra : extraFields.entrySet()) {
-            data.addProperty(extra.getKey(), extra.getValue());
+        for (Map.Entry<String, Object> extra : extraFields.entrySet()) {
+            if(extra.getValue() instanceof String) {
+                data.addProperty(extra.getKey(), (String) extra.getValue());
+            } else if(extra.getValue() instanceof Number) {
+                data.addProperty(extra.getKey(), (Number) extra.getValue());
+            } else if(extra.getValue() instanceof Boolean) {
+                data.addProperty(extra.getKey(), (Boolean) extra.getValue());
+            } else {
+                LOGGER.error("extra-field {} datatype not supported", extra);
+            }
         }
 
         dynamicSleepNode.forEach((sleepNodeId, time) -> {
