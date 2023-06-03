@@ -105,16 +105,10 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         }
         for (Map.Entry<String, Object> extra : extraFields.entrySet()) {
             if(extra.getValue() instanceof String) {
-                data.addProperty(extra.getKey() + "_K_TYPE", "String");
                 data.addProperty(extra.getKey(), (String) extra.getValue());
             } else if(extra.getValue() instanceof Number) {
-                data.addProperty(extra.getKey() + "_K_TYPE", "Number");
                 data.addProperty(extra.getKey(), (Number) extra.getValue());
-            } else if(extra.getValue() instanceof Character) {
-                data.addProperty(extra.getKey() + "_K_TYPE", "Character");
-                data.addProperty(extra.getKey(), (Character) extra.getValue());
             } else if(extra.getValue() instanceof Boolean) {
-                data.addProperty(extra.getKey() + "_K_TYPE", "Boolean");
                 data.addProperty(extra.getKey(), (Boolean) extra.getValue());
             } else {
                 LOGGER.error("extra-field {} datatype not supported", extra);
