@@ -15,7 +15,7 @@ public abstract class EventPayload {
     /**
      * extra fields to pass to event
      */
-    private final Map<String, String> extraFields;
+    private final Map<String, Object> extraFields;
 
     /**
      * dynamicSleepNode property
@@ -34,7 +34,7 @@ public abstract class EventPayload {
      * @param key property name
      * @param value property value
      */
-    public void addProperty(String key, String value) {
+    public void addProperty(String key, Object value) {
         extraFields.put(key, value);
     }
 
