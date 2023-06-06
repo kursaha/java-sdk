@@ -7,6 +7,7 @@ import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.Credentials;
 import okhttp3.OkHttpClient;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -14,14 +15,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * Mailkeets client implementation
  */
 public class MailkeetsClientImpl implements MailkeetsClient {
-    private static final Logger LOGGER = Logger.getLogger(MailkeetsClientImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailkeetsClientImpl.class.getName());
 
     private final String apiKey;
     private final MailkeetsService service;
@@ -56,7 +56,7 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             String body,
             String unsubscribedList
     ) {
-        String requestIdentifier = UUID.randomUUID().toString();
+        UUID requestIdentifier = UUID.randomUUID();
         MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, contentType, body, requestIdentifier, unsubscribedList);
         return sendMail(requestDto);
     }
@@ -70,9 +70,9 @@ public class MailkeetsClientImpl implements MailkeetsClient {
                 if (!response.isSuccessful()) {
                     try {
                         ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
-                        LOGGER.log(Level.SEVERE, "failed to execute request : " + errorResponse);
+                        LOGGER.error("failed to execute request : {}", errorResponse);
                     } catch (Exception ex) {
-                        LOGGER.log(Level.SEVERE, "failed to execute request", ex);
+                        LOGGER.error("failed to execute request", ex);
                     }
                 }
 
@@ -80,10 +80,10 @@ public class MailkeetsClientImpl implements MailkeetsClient {
 
             @Override
             public void onFailure(Call<MailResponseDto> call, Throwable t) {
-                LOGGER.log(Level.SEVERE, "failed to execute request", t);
+                LOGGER.error("failed to execute request", t);
             }
         });
-        return requestDto.getRequestIdentifier();
+        return requestDto.getRequestIdentifier().toString();
     }
 
     @Override
@@ -100,11 +100,11 @@ public class MailkeetsClientImpl implements MailkeetsClient {
                 }
                 responseAsString = sb.toString();
                 errorResponse = gson.fromJson(responseAsString, ErrorMessageDto.class);
-                LOGGER.log(Level.SEVERE, "failed to execute request", errorResponse);
+                LOGGER.error("failed to execute request : {}", errorResponse);
             }
             return response.body();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "failed to execute request", errorResponse);
+            LOGGER.error("failed to execute request : {}", errorResponse);
             throw e;
         }
     }
