@@ -2,6 +2,7 @@ package com.kursaha.mailkeets.dto;
 
 import lombok.Data;
 import lombok.NonNull;
+import java.util.UUID;
 
 /**
  * MailRequestDto is a class by which we can send request to mail-send api
@@ -21,7 +22,7 @@ public class MailRequestDto {
     @NonNull
     private final String body;
     @NonNull
-    private final String requestIdentifier;
+    private final UUID requestIdentifier;
     @NonNull
     private final String unsubscribedList;
 }
