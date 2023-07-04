@@ -162,7 +162,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     @Override
     public void signal(UUID identifier, String stepNodeId, String emitterId, SignalFcmNotificationPayload payload) {
-        JsonObject data = payload.convertToken();
+        JsonObject data = payload.getAsJsonObject();
         signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
