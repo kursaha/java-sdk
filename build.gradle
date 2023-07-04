@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kursaha"
-version '0.0.18'
+version '0.0.19'
 
 sourceCompatibility=11
 targetCompatibility=11

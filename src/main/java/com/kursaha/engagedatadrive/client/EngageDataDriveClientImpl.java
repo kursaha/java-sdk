@@ -162,11 +162,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     @Override
     public void signal(UUID identifier, String stepNodeId, String emitterId, SignalFcmNotificationPayload payload) {
-        JsonObject data = new JsonObject();
-        if (payload.getFcmToken() == null || payload.getFcmToken().isBlank()) {
-            throw new RuntimeException("fcm token is missing");
-        }
-        data.addProperty("fcm_token", payload.getFcmToken());
+        JsonObject data = payload.getAsJsonObject();
         signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
