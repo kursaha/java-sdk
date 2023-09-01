@@ -1,21 +1,24 @@
 package com.kursaha.mailkeets.client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.kursaha.Credentials;
 import com.kursaha.common.ErrorMessageDto;
-import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
+import com.kursaha.common.MailkeetsException;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
-import com.kursaha.Credentials;
+import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
 import okhttp3.OkHttpClient;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
 
 /**
  * Mailkeets client implementation
@@ -55,39 +58,30 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             String contentType,
             String body,
             String unsubscribedList
-    ) {
+    ) throws MailkeetsException, IOException {
         UUID requestIdentifier = UUID.randomUUID();
         MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, contentType, body, requestIdentifier, unsubscribedList);
         return sendMail(requestDto);
     }
 
     @Override
-    public String sendMail(MailRequestDto requestDto) {
+    public String sendMail(MailRequestDto requestDto) throws MailkeetsException, IOException {
         Call<MailResponseDto> repos = service.sendMail(requestDto, "Bearer " + apiKey);
-        repos.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<MailResponseDto> call, Response<MailResponseDto> response) {
-                if (!response.isSuccessful()) {
-                    try {
-                        ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
-                        LOGGER.error("failed to execute request : {}", errorResponse);
-                    } catch (Exception ex) {
-                        LOGGER.error("failed to execute request", ex);
-                    }
-                }
-
+        Response<MailResponseDto> response = repos.execute();
+        if (!response.isSuccessful()) {
+            try {
+                ErrorMessageDto errorMessageDto = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                LOGGER.error("failed to execute request : {}", errorMessageDto);
+                throw new MailkeetsException(errorMessageDto);
+            } catch (JsonIOException | JsonSyntaxException je) {
+                throw new RuntimeException(je);
             }
-
-            @Override
-            public void onFailure(Call<MailResponseDto> call, Throwable t) {
-                LOGGER.error("failed to execute request", t);
-            }
-        });
+        }
         return requestDto.getRequestIdentifier().toString();
     }
 
     @Override
-    public List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception{
+    public List<VerifiedDomainNameResponseDto> getVerifiedDomains() throws Exception {
         ErrorMessageDto errorResponse = new ErrorMessageDto();
         try {
             Call<List<VerifiedDomainNameResponseDto>> repos = service.getVerifiedDomains("Bearer " + apiKey);

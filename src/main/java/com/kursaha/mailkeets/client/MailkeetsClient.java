@@ -1,7 +1,9 @@
 package com.kursaha.mailkeets.client;
 
-import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
+import com.kursaha.common.MailkeetsException;
 import com.kursaha.mailkeets.dto.MailRequestDto;
+import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
+import java.io.IOException;
 import java.util.List;
 /**
  * Mailkeets client
@@ -28,14 +30,17 @@ public interface MailkeetsClient {
             String contentType,
             String body,
             String unsubscribedList
-    );
+    ) throws MailkeetsException, IOException;
 
     /**
-     * request to send mail
+     * Synchronously send the request and return its response.
      * @param requestDto requires dto to send email
-     * @return String identifier to trace the request
+     * @throws IOException – if a problem occurred talking to the server.
+     * @throws RuntimeException – (and subclasses) if an unexpected error occurs creating the request or decoding the response.
+     * @throws MailkeetsException - if error happens in the server processing the request
+     * @return identifier
      */
-    String sendMail(MailRequestDto requestDto);
+    String sendMail(MailRequestDto requestDto) throws MailkeetsException, IOException;
 
     /**
      * request to get all verified domain names
