@@ -21,6 +21,9 @@ public interface MailkeetsClient {
      * @param unsubscribedList Refer <a href="https://www.rfc-editor.org/rfc/rfc2369">Unsubscribe List</a> and
      *                         <a href="https://www.rfc-editor.org/rfc/rfc8058">Unsubscribed Post content</a>
      * @return String identifier to trace the request
+     * @throws MailkeetsException If server failed to handle the request
+     * @throws IOException If failed to communicate to the server
+     * @throws RuntimeException If failed to parse request or response
      */
     String send (
             String subject,
