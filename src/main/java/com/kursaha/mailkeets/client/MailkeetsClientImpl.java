@@ -74,7 +74,7 @@ public class MailkeetsClientImpl implements MailkeetsClient {
                 LOGGER.error("failed to execute request : {}", errorMessageDto);
                 throw new MailkeetsException(errorMessageDto);
             } catch (JsonIOException | JsonSyntaxException je) {
-                throw new RuntimeException(je.getMessage());
+                throw new RuntimeException(je);
             }
         }
         return requestDto.getRequestIdentifier().toString();
