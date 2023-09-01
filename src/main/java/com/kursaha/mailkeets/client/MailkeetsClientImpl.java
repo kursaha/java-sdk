@@ -68,12 +68,9 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             @Override
             public void onResponse(Call<MailResponseDto> call, Response<MailResponseDto> response) {
                 if (!response.isSuccessful()) {
-                    try {
-                        ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
-                        LOGGER.error("failed to execute request : {}", errorResponse);
-                    } catch (Exception ex) {
-                        LOGGER.error("failed to execute request", ex);
-                    }
+                    ErrorMessageDto errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                    LOGGER.error("failed to execute request : {}", errorResponse);
+                    throw new RuntimeException(gson.toJson(errorResponse));
                 }
 
             }
