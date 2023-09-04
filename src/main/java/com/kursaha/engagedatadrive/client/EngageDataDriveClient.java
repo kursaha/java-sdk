@@ -1,5 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
+import com.kursaha.common.Callback;
 import com.kursaha.engagedatadrive.dto.*;
 
 import java.io.IOException;
@@ -121,4 +122,19 @@ public interface EngageDataDriveClient {
         String customerId,
         CustomerDto customerDto
     ) throws IOException;
+
+
+    /**
+     * This method will create new customer data or update an existing customer
+     * The operation is performed in an async way
+     * @param customerId Unique customer id
+     * @param customerDto Details of customer
+     * @param callback to get notified on Success and Failure
+     * decoding the response.
+     */
+    void sendCustomerData (
+            String customerId,
+            CustomerDto customerDto,
+            Callback callback
+    );
 }

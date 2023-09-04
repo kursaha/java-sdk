@@ -260,17 +260,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     @Override
     public void sendCustomerData(String customerId, CustomerDto customerDto) throws IOException {
-        if(customerId == null || customerId.isBlank()) {
-            throw new IllegalArgumentException("Customer id can't be null or blank");
-        } else if (!customerDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Given format of email is incorrect.");
-        } else if (customerDto.getDob() != null && isValidIso8601DateTime(customerDto.getDob())) {
-            throw new IllegalArgumentException("Not an valid ISO-8601 date format");
-        }
-
-        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto(customerId, customerDto);
-
-        Call<Void> repos = service.sendCustomerData("Bearer " + apiKey, dto);
+        Call<Void> repos = sendCustomerDataInternal(customerId, customerDto);
         Response<Void> response = repos.execute();
         if (!response.isSuccessful()) {
             try {
@@ -286,6 +276,39 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                 throw new RuntimeException(je);
             }
         }
+    }
+
+    @Override
+    public void sendCustomerData(String customerId, CustomerDto customerDto, com.kursaha.common.Callback callback) {
+        Call<Void> repos = sendCustomerDataInternal(customerId, customerDto);
+        repos.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    callback.onFailure();
+                }
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onFailure();
+            }
+        });
+    }
+
+    private Call<Void> sendCustomerDataInternal(String customerId, CustomerDto customerDto) {
+        if (customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("Customer id can't be null or blank");
+        } else if (!customerDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Given format of email is incorrect.");
+        } else if (customerDto.getDob() != null && isValidIso8601DateTime(customerDto.getDob())) {
+            throw new IllegalArgumentException("Not an valid ISO-8601 date format");
+        }
+
+        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto(customerId, customerDto);
+
+        return service.sendCustomerData("Bearer " + apiKey, dto);
     }
 
     private boolean isValidIso8601DateTime(String dateTimeString) {
