@@ -1,9 +1,10 @@
 package com.kursaha;
 
-import com.kursaha.engagedatadrive.dto.SignalMailPayload;
+import com.kursaha.engagedatadrive.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import java.io.IOException;
 import java.util.UUID;
 
 class KursahaClientTest {
@@ -32,6 +33,15 @@ class KursahaClientTest {
             SignalMailPayload payload = new SignalMailPayload(emitterId + "@example.com");
             kursahaClient.edd.signal(identifier, "start_event", emitterId, payload);
         }
+    }
+
+    @Test
+    @Disabled("use to test endpoints for sending customer data")
+    public void sendCustomerDataTest() throws IOException {
+        UUID customerId = UUID.randomUUID();
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setEmail("as.,d@gd.com");
+        kursahaClient.edd.sendCustomerData(customerId.toString(), customerDto);
     }
 
     @Test
