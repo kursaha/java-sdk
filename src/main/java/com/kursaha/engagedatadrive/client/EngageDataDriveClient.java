@@ -108,4 +108,15 @@ public interface EngageDataDriveClient {
      * @throws IOException on network error
      */
     boolean isConnectedAndAuthenticated() throws IOException;
+
+    /**
+     * This method will create new customer data or update an existing customer
+     * @param customerId Unique customer id
+     * @param customerDto Details of customer
+     * @throws IOException on network error
+     */
+    void sendCustomerData (
+        String customerId,
+        CustomerDto customerDto
+    ) throws IOException;
 }

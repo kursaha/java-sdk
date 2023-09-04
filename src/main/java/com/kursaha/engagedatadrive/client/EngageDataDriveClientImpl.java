@@ -15,6 +15,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -252,5 +254,41 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     @Override
     public boolean isConnectedAndAuthenticated() throws IOException {
         return Objects.equals(Objects.requireNonNull(service.ping("Bearer " + apiKey).execute().body()).getResponse(), "pong");
+    }
+
+    @Override
+    public void sendCustomerData(String customerId, CustomerDto customerDto) throws IOException {
+        if(customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("customer id can't be null or blank");
+        } else if (!customerDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("given format of email is incorrect.");
+        } else if (customerDto.getDob() != null && isValidIso8601DateTime(customerDto.getDob())) {
+            throw new IllegalArgumentException("not an iso date time format");
+        }
+
+        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto();
+        dto.setCustomerId(customerId);
+        dto.setCustomerDto(customerDto);
+
+        Call<Void> repos = service.sendCustomerData("Bearer " + apiKey, dto);
+        Response<Void> response = repos.execute();
+        if (!response.isSuccessful()) {
+            try {
+                ErrorMessageDto errorMessageDto = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                LOGGER.error("failed to execute request : {}", errorMessageDto);
+            } catch (JsonIOException | JsonSyntaxException je) {
+                throw new RuntimeException(je);
+            }
+        }
+    }
+
+    private boolean isValidIso8601DateTime(String dateTimeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        try {
+            formatter.parse(dateTimeString);
+            return true; // Parsing successful; it's a valid ISO 8601 date-time.
+        } catch (DateTimeParseException e) {
+            return false; // Parsing failed; it's not a valid ISO 8601 date-time.
+        }
     }
 }

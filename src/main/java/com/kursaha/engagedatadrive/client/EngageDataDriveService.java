@@ -1,5 +1,6 @@
 package com.kursaha.engagedatadrive.client;
 
+import com.kursaha.engagedatadrive.dto.CustomerPartialUpdateDto;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
 import com.kursaha.engagedatadrive.dto.SdkPingResponse;
 import retrofit2.Call;
@@ -20,8 +21,8 @@ public interface EngageDataDriveService {
     @POST("event-flows/signal")
     @Headers({"Content-type: application/json"})
     Call<Void> sendEventByIdentifier(
-            @Header("Authorization") String apiKey,
-            @Body EventFlowRequestDto requestDto
+        @Header("Authorization") String apiKey,
+        @Body EventFlowRequestDto requestDto
     );
 
     /**
@@ -31,7 +32,19 @@ public interface EngageDataDriveService {
      */
     @GET("sdk/ping")
     Call<SdkPingResponse> ping(
-            @Header("Authorization") String apiKey
+        @Header("Authorization") String apiKey
+    );
+
+    /**
+     * Request to send customer details
+     * @param apiKey user apikey
+     * @param customerPartialUpdateDto details of customer
+     * @return void
+     */
+    @PATCH("customers")
+    Call<Void> sendCustomerData(
+        @Header("Authorization") String apiKey,
+        @Body CustomerPartialUpdateDto customerPartialUpdateDto
     );
 
 }
