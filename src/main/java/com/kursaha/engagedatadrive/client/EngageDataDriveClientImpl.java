@@ -286,8 +286,9 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (!response.isSuccessful()) {
                     callback.onFailure();
+                } else {
+                    callback.onSuccess();
                 }
-                callback.onSuccess();
             }
 
             @Override
