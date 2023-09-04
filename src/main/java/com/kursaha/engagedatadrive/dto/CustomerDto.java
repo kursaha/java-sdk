@@ -60,9 +60,4 @@ public class CustomerDto{
      * We only accept date of birth in <a href = "https://en.wikipedia.org/wiki/ISO_8601">ISO_8601</a> format.
      */
     private String dob;
-
-    /**
-     * Use this, If there is any additional information.
-     */
-    private Map<String, Object> additionalProperties = new HashMap<>();
 }

@@ -114,6 +114,8 @@ public interface EngageDataDriveClient {
      * @param customerId Unique customer id
      * @param customerDto Details of customer
      * @throws IOException on network error
+     * @throws RuntimeException (and subclasses) if an unexpected error occurs creating the request or
+     * decoding the response.
      */
     void sendCustomerData (
         String customerId,

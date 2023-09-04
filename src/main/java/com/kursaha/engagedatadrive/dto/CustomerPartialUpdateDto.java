@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class CustomerPartialUpdateDto {
-    private String customerId;
+    private final String customerId;
 
-    private CustomerDto customerDto;
+    private final CustomerDto customerDto;
 }

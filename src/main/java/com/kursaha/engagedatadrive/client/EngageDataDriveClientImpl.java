@@ -6,6 +6,7 @@ import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.dto.*;
 import com.kursaha.engagedatadrive.dto.EventFlowRequestDto.SignalPayload;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;
@@ -14,6 +15,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.IOException;
+import java.io.Reader;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -259,23 +261,27 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     @Override
     public void sendCustomerData(String customerId, CustomerDto customerDto) throws IOException {
         if(customerId == null || customerId.isBlank()) {
-            throw new IllegalArgumentException("customer id can't be null or blank");
+            throw new IllegalArgumentException("Customer id can't be null or blank");
         } else if (!customerDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("given format of email is incorrect.");
+            throw new IllegalArgumentException("Given format of email is incorrect.");
         } else if (customerDto.getDob() != null && isValidIso8601DateTime(customerDto.getDob())) {
-            throw new IllegalArgumentException("not an iso date time format");
+            throw new IllegalArgumentException("Not an valid ISO-8601 date format");
         }
 
-        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto();
-        dto.setCustomerId(customerId);
-        dto.setCustomerDto(customerDto);
+        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto(customerId, customerDto);
 
         Call<Void> repos = service.sendCustomerData("Bearer " + apiKey, dto);
         Response<Void> response = repos.execute();
         if (!response.isSuccessful()) {
             try {
-                ErrorMessageDto errorMessageDto = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                ResponseBody responseBody = response.errorBody();
+                if (responseBody == null) {
+                    throw new IOException("Error Response body is null");
+                }
+                Reader reader = responseBody.charStream();
+                ErrorMessageDto errorMessageDto = gson.fromJson(reader, ErrorMessageDto.class);
                 LOGGER.error("failed to execute request : {}", errorMessageDto);
+                throw new IOException("Failed to execute request. " + errorMessageDto);
             } catch (JsonIOException | JsonSyntaxException je) {
                 throw new RuntimeException(je);
             }
