@@ -113,14 +113,14 @@ public interface EngageDataDriveClient {
     /**
      * This method will create new customer data or update an existing customer
      * @param customerId Unique customer id
-     * @param customerDto Details of customer
+     * @param customerData Details of customer
      * @throws IOException on network error
      * @throws RuntimeException (and subclasses) if an unexpected error occurs creating the request or
      * decoding the response.
      */
     void sendCustomerData (
         String customerId,
-        CustomerDto customerDto
+        CustomerData customerData
     ) throws IOException;
 
 
@@ -128,13 +128,13 @@ public interface EngageDataDriveClient {
      * This method will create new customer data or update an existing customer
      * The operation is performed in an async way
      * @param customerId Unique customer id
-     * @param customerDto Details of customer
+     * @param customerData Details of customer
      * @param callback to get notified on Success and Failure
      * decoding the response.
      */
     void sendCustomerData (
             String customerId,
-            CustomerDto customerDto,
+            CustomerData customerData,
             Callback callback
     );
 }

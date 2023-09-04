@@ -2,14 +2,12 @@ package com.kursaha.engagedatadrive.dto;
 
 import com.kursaha.engagedatadrive.dto.enumeration.Gender;
 import lombok.Data;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class represents the basic customer details.
  */
 @Data
-public class CustomerDto{
+public class CustomerData {
     /**
      * Remove any leading and trailing white space, and convert all characters to lowercase.
      */

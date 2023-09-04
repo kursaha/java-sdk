@@ -9,5 +9,5 @@ import lombok.Data;
 public class CustomerPartialUpdateDto {
     private final String customerId;
 
-    private final CustomerDto customerDto;
+    private final CustomerData customerData;
 }

@@ -39,9 +39,9 @@ class KursahaClientTest {
     @Disabled("use to test endpoints for sending customer data")
     public void sendCustomerDataTest() throws IOException {
         UUID customerId = UUID.randomUUID();
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setEmail("as.,d@gd.com");
-        kursahaClient.edd.sendCustomerData(customerId.toString(), customerDto);
+        CustomerData customerData = new CustomerData();
+        customerData.setEmailId("as.,d@gd.com");
+        kursahaClient.edd.sendCustomerData(customerId.toString(), customerData);
     }
 
     @Test

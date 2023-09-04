@@ -259,8 +259,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     @Override
-    public void sendCustomerData(String customerId, CustomerDto customerDto) throws IOException {
-        Call<Void> repos = sendCustomerDataInternal(customerId, customerDto);
+    public void sendCustomerData(String customerId, CustomerData customerData) throws IOException {
+        Call<Void> repos = sendCustomerDataInternal(customerId, customerData);
         Response<Void> response = repos.execute();
         if (!response.isSuccessful()) {
             try {
@@ -279,8 +279,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     @Override
-    public void sendCustomerData(String customerId, CustomerDto customerDto, com.kursaha.common.Callback callback) {
-        Call<Void> repos = sendCustomerDataInternal(customerId, customerDto);
+    public void sendCustomerData(String customerId, CustomerData customerData, com.kursaha.common.Callback callback) {
+        Call<Void> repos = sendCustomerDataInternal(customerId, customerData);
         repos.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -298,16 +298,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         });
     }
 
-    private Call<Void> sendCustomerDataInternal(String customerId, CustomerDto customerDto) {
+    private Call<Void> sendCustomerDataInternal(String customerId, CustomerData customerData) {
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalArgumentException("Customer id can't be null or blank");
-        } else if (!customerDto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+        } else if (!customerData.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new IllegalArgumentException("Given format of email is incorrect.");
-        } else if (customerDto.getDob() != null && isValidIso8601DateTime(customerDto.getDob())) {
+        } else if (customerData.getDob() != null && isValidIso8601DateTime(customerData.getDob())) {
             throw new IllegalArgumentException("Not an valid ISO-8601 date format");
         }
 
-        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto(customerId, customerDto);
+        CustomerPartialUpdateDto dto = new CustomerPartialUpdateDto(customerId, customerData);
 
         return service.sendCustomerData("Bearer " + apiKey, dto);
     }
