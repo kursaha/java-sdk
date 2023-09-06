@@ -7,10 +7,10 @@ import lombok.NonNull;
 import java.util.List;
 
 /**
- * ReceiveEntityRequestDto holds the payload which is required for the EngageDataDriveService api
+ * EventFlowRequestDto holds the payload which is required for the EngageDataDriveService api
  */
 @Data
-public class ReceiveEntityRequestDto {
+public class EventFlowRequestDto {
     @NonNull
     private final String requestIdentifier;
 
@@ -25,7 +25,7 @@ public class ReceiveEntityRequestDto {
         private final String emitterId;
         @NonNull
         private final String stepNodeId;
-        private final EventData data;
+        private final JsonObject data;
         @NonNull
         private final String eventflowIdentifier;
     }

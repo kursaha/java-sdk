@@ -1,7 +1,6 @@
 package com.kursaha;
 
 import com.google.gson.Gson;
-import com.kursaha.common.RetryInterceptor;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClient;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
@@ -9,7 +8,6 @@ import com.kursaha.mailkeets.client.MailkeetsClientImpl;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-
 import java.time.Instant;
 import java.util.concurrent.*;
 
@@ -66,7 +64,6 @@ public class KursahaClient {
         OkHttpClient okHttpClient =
                 new OkHttpClient.Builder()
                         .dispatcher(dispatcher)
-                        .addInterceptor(new RetryInterceptor(3))
                         .addInterceptor(interceptor).build();
 
         this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl, okHttpClient);
