@@ -137,4 +137,10 @@ public interface EngageDataDriveClient {
             CustomerData customerData,
             Callback callback
     );
+
+    void trace (
+            String customerId,
+            String eventType,
+            EventData eventData
+    );
 }
