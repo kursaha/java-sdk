@@ -4,7 +4,7 @@ import com.google.gson.*;
 import com.kursaha.Credentials;
 import com.kursaha.common.ErrorMessageDto;
 import com.kursaha.engagedatadrive.dto.*;
-import com.kursaha.engagedatadrive.dto.EventFlowRequestDto.SignalPayload;
+import com.kursaha.engagedatadrive.dto.ReceiveEntityRequestDto.SignalPayload;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import org.slf4j.Logger;
@@ -211,7 +211,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private void sendEventFlow(List<SignalPayload> signals) {
         LOGGER.info("Sending signal for {}", signals.size());
         UUID requestIdentifier = UUID.randomUUID();
-        EventFlowRequestDto requestDto = new EventFlowRequestDto(requestIdentifier.toString(), signals);
+        ReceiveEntityRequestDto requestDto = new ReceiveEntityRequestDto(requestIdentifier.toString(), signals);
         Call<Void> repos = selectApi(requestDto);
         repos.enqueue(new Callback<>() {
             @Override
@@ -244,8 +244,8 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         });
     }
 
-    private Call<Void> selectApi(EventFlowRequestDto eventFlowRequestDto) {
-        return service.sendEventByIdentifier("Bearer " + apiKey, eventFlowRequestDto);
+    private Call<Void> selectApi(ReceiveEntityRequestDto receiveEntityRequestDto) {
+        return service.sendEventByIdentifier("Bearer " + apiKey, receiveEntityRequestDto);
     }
 
     @Override
@@ -296,6 +296,11 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                 callback.onFailure();
             }
         });
+    }
+
+    @Override
+    public void sendEvent(List<Event> events) {
+        Call<Void> call = service.sendEventByIdentifier()
     }
 
     private Call<Void> sendCustomerDataInternal(String customerId, CustomerData customerData) {

@@ -1,11 +1,10 @@
 package com.kursaha.engagedatadrive.client;
 
 import com.kursaha.engagedatadrive.dto.CustomerPartialUpdateDto;
-import com.kursaha.engagedatadrive.dto.EventFlowRequestDto;
+import com.kursaha.engagedatadrive.dto.ReceiveEntityRequestDto;
 import com.kursaha.engagedatadrive.dto.SdkPingResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
-import java.util.UUID;
 
 /**
  * Api interface of Engage-data-drive
@@ -22,7 +21,7 @@ public interface EngageDataDriveService {
     @Headers({"Content-type: application/json"})
     Call<Void> sendEventByIdentifier(
         @Header("Authorization") String apiKey,
-        @Body EventFlowRequestDto requestDto
+        @Body ReceiveEntityRequestDto requestDto
     );
 
     /**

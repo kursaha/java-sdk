@@ -4,6 +4,7 @@ import com.kursaha.common.Callback;
 import com.kursaha.engagedatadrive.dto.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -133,8 +134,14 @@ public interface EngageDataDriveClient {
      * decoding the response.
      */
     void sendCustomerData (
-            String customerId,
-            CustomerData customerData,
-            Callback callback
+        String customerId,
+        CustomerData customerData,
+        Callback callback
     );
+
+    /**
+     * This method will create event
+     * @param events Event Data
+     */
+    void sendEvent (List<Event> events);
 }
