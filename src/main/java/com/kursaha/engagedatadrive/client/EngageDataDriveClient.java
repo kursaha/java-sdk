@@ -137,4 +137,16 @@ public interface EngageDataDriveClient {
             CustomerData customerData,
             Callback callback
     );
+
+    /**
+     * This method will send event data to Kursaha
+     * @param customerId Unique customer id
+     * @param eventType Types of event such as view, checkout
+     * @param eventData event specific data
+     */
+    void trace (
+        String customerId,
+        String eventType,
+        EventData eventData
+    );
 }

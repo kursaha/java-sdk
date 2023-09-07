@@ -34,7 +34,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     private final Gson gson;
 
     private final Object syncObj = new Object();
-    private final ConcurrentLinkedQueue<SignalPayload> signalHolder;
+    private final ConcurrentLinkedQueue<Object> signalHolder;
 
     private volatile boolean processingMessages;
 
@@ -68,15 +68,15 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
                     while (true) {
                         if (!signalHolder.isEmpty()) {
                             processingMessages = true;
-                            List<SignalPayload> signals = new LinkedList<>();
+                            List<Object> signals = new LinkedList<>();
                             int i = 0;
                             while (!signalHolder.isEmpty() && ++i < MAX_BATCH_SIZE) {
-                                SignalPayload signal = signalHolder.poll();
+                                Object signal = signalHolder.poll();
                                 if (signal != null) {
                                     signals.add(signal);
                                 }
                             }
-                            if (signals.size() > 0) {
+                            if (!signals.isEmpty()) {
                                 sendEventFlow(signals);
                             }
                         } else {
@@ -201,14 +201,14 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         signalInternal(stepNodeId, emitterId, payload.getExtraFields(), data, identifier, payload.getDynamicSleepNode());
     }
 
-    private void sendEventFlow(SignalPayload signals) {
+    private void sendEventFlow(Object signals) {
         signalHolder.add(signals);
         synchronized (syncObj) {
             syncObj.notify();
         }
     }
 
-    private void sendEventFlow(List<SignalPayload> signals) {
+    private void sendEventFlow(List<Object> signals) {
         LOGGER.info("Sending signal for {}", signals.size());
         UUID requestIdentifier = UUID.randomUUID();
         EventFlowRequestDto requestDto = new EventFlowRequestDto(requestIdentifier.toString(), signals);
@@ -320,5 +320,11 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
         } catch (DateTimeParseException e) {
             return false; // Parsing failed; it's not a valid ISO 8601 date-time.
         }
+    }
+
+    @Override
+    public void trace(String customerId, String eventType, EventData eventData) {
+        TraceRequestDto dto = new TraceRequestDto(customerId, eventType, eventData);
+        sendEventFlow(dto);
     }
 }
