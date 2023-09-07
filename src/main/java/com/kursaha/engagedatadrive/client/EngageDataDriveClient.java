@@ -138,9 +138,15 @@ public interface EngageDataDriveClient {
             Callback callback
     );
 
+    /**
+     * This method will send random event data
+     * @param customerId Unique customer id
+     * @param eventType Types of event
+     * @param eventData event specific data
+     */
     void trace (
-            String customerId,
-            String eventType,
-            EventData eventData
+        String customerId,
+        String eventType,
+        EventData eventData
     );
 }

@@ -324,7 +324,7 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
 
     @Override
     public void trace(String customerId, String eventType, EventData eventData) {
-        TraceRequestDto dto = new TraceRequestDto();
+        TraceRequestDto dto = new TraceRequestDto(customerId, eventType, eventData);
         sendEventFlow(dto);
     }
 }
