@@ -40,7 +40,7 @@ class KursahaClientTest {
     public void sendCustomerDataTest() throws IOException {
         UUID customerId = UUID.randomUUID();
         CustomerData customerData = new CustomerData();
-        customerData.setEmailId("as.,d@gd.com");
+        customerData.setEmail("as.,d@gd.com");
         kursahaClient.edd.sendCustomerData(customerId.toString(), customerData);
     }
 

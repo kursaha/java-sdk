@@ -139,9 +139,9 @@ public interface EngageDataDriveClient {
     );
 
     /**
-     * This method will send random event data
+     * This method will send event data to Kursaha
      * @param customerId Unique customer id
-     * @param eventType Types of event
+     * @param eventType Types of event such as view, checkout
      * @param eventData event specific data
      */
     void trace (

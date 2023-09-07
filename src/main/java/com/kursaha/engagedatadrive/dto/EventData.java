@@ -17,5 +17,4 @@ public class EventData {
     private Double price;
     private String deviceId;
     private String sessionId;
-    private Map<String, Object> additionalProperties;
 }
