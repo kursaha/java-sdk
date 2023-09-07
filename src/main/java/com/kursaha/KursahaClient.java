@@ -5,11 +5,16 @@ import com.kursaha.engagedatadrive.client.EngageDataDriveClient;
 import com.kursaha.engagedatadrive.client.EngageDataDriveClientImpl;
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.client.MailkeetsClientImpl;
+import com.kursaha.smartassist.client.SmartAssistClient;
+import com.kursaha.smartassist.client.SmartAssistClientImpl;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.*;
 
 /**
@@ -18,11 +23,17 @@ import java.util.concurrent.*;
 public class KursahaClient {
     private static final String MAILKEETS_BASE_URL = "https://mailkeets.kursaha.com/api/";
     private static final String EDD_BASE_URL = "https://edd.kursaha.com/api/";
+    private static final String SA_BASE_URL = "https://sa.kursaha.com/api/";
 
     /**
      * Mailkeets client
      */
     public final MailkeetsClient mk;
+
+    /**
+     * Smart Assist client
+     */
+    public final SmartAssistClient sa;
 
     /**
      * Kursaha client
@@ -46,7 +57,7 @@ public class KursahaClient {
      * @param nThread Number of threads use to execute the request
      */
     public KursahaClient(String apiKey, int nThread) {
-        this(apiKey, EDD_BASE_URL, MAILKEETS_BASE_URL, nThread);
+        this(apiKey, EDD_BASE_URL, MAILKEETS_BASE_URL, SA_BASE_URL, nThread);
     }
 
     /**
@@ -54,7 +65,7 @@ public class KursahaClient {
      *
      * @param apiKey string key
      */
-    KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl, int nThread) {
+    KursahaClient(String apiKey, String eddBaseUrl, String mailkeetsBaseUrl, String saBaseUrl, int nThread) {
         Gson gson = new Gson();
         this.executorService = Executors.newScheduledThreadPool(nThread);
 
@@ -69,6 +80,7 @@ public class KursahaClient {
 
         this.mk = new MailkeetsClientImpl(new Credentials(apiKey), gson, mailkeetsBaseUrl, okHttpClient);
         this.edd = new EngageDataDriveClientImpl(new Credentials(apiKey), gson, eddBaseUrl, okHttpClient);
+        this.sa = new SmartAssistClientImpl(new Credentials(apiKey), gson, saBaseUrl, okHttpClient);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println(Instant.now() +  ": Checking if there is any message are pending.");
             try {

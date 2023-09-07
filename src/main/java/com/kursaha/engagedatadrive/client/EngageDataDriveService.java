@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Api interface of Engage-data-drive
  */
-public interface EngageDataDriveService {
+interface EngageDataDriveService {
 
     /**
      * Request to execute send-event api

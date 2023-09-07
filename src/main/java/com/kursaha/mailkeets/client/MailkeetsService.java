@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Mailkeets service
  */
-public interface MailkeetsService {
+interface MailkeetsService {
 
     /**
      * Send mail
