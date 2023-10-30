@@ -279,7 +279,16 @@ public class EngageDataDriveClientImpl implements EngageDataDriveClient {
     }
 
     @Override
-    public void sendCustomerData(String customerId, CustomerData customerData, com.kursaha.common.Callback callback) {
+    public void createCustomerData(String customerId, CustomerData customerData, com.kursaha.common.Callback callback) {
+        sendCustomerData(customerId, customerData, callback);
+    }
+
+    @Override
+    public void updateCustomerData(String customerId, CustomerData customerData, com.kursaha.common.Callback callback) {
+        sendCustomerData(customerId, customerData, callback);
+    }
+
+    private void sendCustomerData(String customerId, CustomerData customerData, com.kursaha.common.Callback callback) {
         Call<Void> repos = sendCustomerDataInternal(customerId, customerData);
         repos.enqueue(new Callback<Void>() {
             @Override

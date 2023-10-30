@@ -132,7 +132,21 @@ public interface EngageDataDriveClient {
      * @param callback to get notified on Success and Failure
      * decoding the response.
      */
-    void sendCustomerData (
+    void createCustomerData(
+            String customerId,
+            CustomerData customerData,
+            Callback callback
+    );
+
+    /**
+     * This method will update an existing customer
+     * The operation is performed in an async way
+     * @param customerId Unique customer id
+     * @param customerData Details of customer
+     * @param callback to get notified on Success and Failure
+     * decoding the response.
+     */
+    void updateCustomerData(
             String customerId,
             CustomerData customerData,
             Callback callback
