@@ -27,15 +27,17 @@ public interface SmartAssistClient {
 
     /**
      * Request to get the chat response
-     * @param request string
+     *
+     * @param identifier
+     * @param request      string
      * @param historyQAndA previous chat
      * @return response
-     * @throws IOException if a problem occurred talking to the server.
+     * @throws IOException      if a problem occurred talking to the server.
      * @throws RuntimeException (and subclasses) if an unexpected error occurs creating the request or
-     * decoding the response.
+     *                          decoding the response.
      */
     String getResponse(
-            String request,
+            UUID identifier, String request,
             List<ChatAutomationRequestDto.QAndA> historyQAndA
     ) throws IOException;
 }

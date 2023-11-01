@@ -48,10 +48,10 @@ public class SmartAssistClientImpl implements SmartAssistClient {
 
     @Override
     public String getResponse(
+            UUID identifier,
             String request,
             List<ChatAutomationRequestDto.QAndA> historyQAndA
     ) throws IOException {
-        UUID identifier = UUID.randomUUID();
         ChatAutomationRequestDto dto = new ChatAutomationRequestDto(identifier, request, new History(historyQAndA));
         Call<ChatAutomationResponseDto> response = service.getResponse("Bearer " + apiKey, identifier, dto);
         return response.execute().body().getResponse();
