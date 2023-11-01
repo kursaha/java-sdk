@@ -1,8 +1,12 @@
 package com.kursaha.smartassist.client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.common.Callback;
+import com.kursaha.common.ErrorMessageDto;
+import com.kursaha.common.KursahaException;
 import com.kursaha.smartassist.dto.ChatAutomationRequestDto;
 import com.kursaha.smartassist.dto.ChatAutomationRequestDto.History;
 import com.kursaha.smartassist.dto.ChatAutomationResponseDto;
@@ -48,13 +52,23 @@ public class SmartAssistClientImpl implements SmartAssistClient {
 
     @Override
     public String getResponse(
+            UUID identifier,
             String request,
             List<ChatAutomationRequestDto.QAndA> historyQAndA
     ) throws IOException {
-        UUID identifier = UUID.randomUUID();
         ChatAutomationRequestDto dto = new ChatAutomationRequestDto(identifier, request, new History(historyQAndA));
-        Call<ChatAutomationResponseDto> response = service.getResponse("Bearer " + apiKey, identifier, dto);
-        return response.execute().body().getResponse();
+        Call<ChatAutomationResponseDto> chatResponse = service.getResponse("Bearer " + apiKey, identifier, dto);
+        Response<ChatAutomationResponseDto> response = chatResponse.execute();
+        if (!response.isSuccessful()) {
+            try {
+                ErrorMessageDto errorMessageDto = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
+                LOGGER.error("failed to execute request : {}", errorMessageDto);
+                throw new KursahaException(errorMessageDto);
+            } catch (JsonIOException | JsonSyntaxException | KursahaException je) {
+                throw new RuntimeException(je);
+            }
+        }
+        return response.body().getResponse();
     }
 
     @Override

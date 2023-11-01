@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * Custom exception for Mailkeets
  */
-public class MailkeetsException extends Exception{
+public class KursahaException extends Exception{
     /**
      * use for parsing error message from server
      */
@@ -16,7 +16,7 @@ public class MailkeetsException extends Exception{
      * constructor of MailkeetsException
      * @param errorMessage for parsing error message from server
      */
-    public MailkeetsException(ErrorMessageDto errorMessage) {
+    public KursahaException(ErrorMessageDto errorMessage) {
         super();
         this.errorMessage = errorMessage;
     }

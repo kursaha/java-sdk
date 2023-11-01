@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.UUID;
 
 class SmartAssistClientTest {
 
@@ -14,6 +14,6 @@ class SmartAssistClientTest {
     @Disabled
     void getResponse() throws IOException {
         KursahaClient kk = new KursahaClient("<API Key>");
-        kk.sa.getResponse("How to contact customer support", null);
+        kk.sa.getResponse(UUID.fromString("<Chat Identifier>"), "How to contact customer support", new ArrayList<>());
     }
 }
