@@ -1,6 +1,6 @@
 package com.kursaha.mailkeets.client;
 
-import com.kursaha.common.MailkeetsException;
+import com.kursaha.common.KursahaException;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public interface MailkeetsClient {
      * @param unsubscribedList Refer <a href="https://www.rfc-editor.org/rfc/rfc2369">Unsubscribe List</a> and
      *                         <a href="https://www.rfc-editor.org/rfc/rfc8058">Unsubscribed Post content</a>
      * @return String identifier to trace the request
-     * @throws MailkeetsException If server failed to handle the request
+     * @throws KursahaException If server failed to handle the request
      * @throws IOException If failed to communicate to the server
      * @throws RuntimeException If failed to parse request or response
      */
@@ -33,17 +33,17 @@ public interface MailkeetsClient {
             String contentType,
             String body,
             String unsubscribedList
-    ) throws MailkeetsException, IOException;
+    ) throws KursahaException, IOException;
 
     /**
      * Synchronously send the request and return its response.
      * @param requestDto requires dto to send email
      * @throws IOException – if a problem occurred talking to the server.
      * @throws RuntimeException – (and subclasses) if an unexpected error occurs creating the request or decoding the response.
-     * @throws MailkeetsException - if error happens in the server processing the request
+     * @throws KursahaException - if error happens in the server processing the request
      * @return identifier
      */
-    String sendMail(MailRequestDto requestDto) throws MailkeetsException, IOException;
+    String sendMail(MailRequestDto requestDto) throws KursahaException, IOException;
 
     /**
      * request to get all verified domain names

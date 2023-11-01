@@ -5,7 +5,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.kursaha.Credentials;
 import com.kursaha.common.ErrorMessageDto;
-import com.kursaha.common.MailkeetsException;
+import com.kursaha.common.KursahaException;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import com.kursaha.mailkeets.dto.MailResponseDto;
 import com.kursaha.mailkeets.dto.VerifiedDomainNameResponseDto;
@@ -58,21 +58,21 @@ public class MailkeetsClientImpl implements MailkeetsClient {
             String contentType,
             String body,
             String unsubscribedList
-    ) throws MailkeetsException, IOException {
+    ) throws KursahaException, IOException {
         UUID requestIdentifier = UUID.randomUUID();
         MailRequestDto requestDto = new MailRequestDto(fromName, from, to, subject, contentType, body, requestIdentifier, unsubscribedList);
         return sendMail(requestDto);
     }
 
     @Override
-    public String sendMail(MailRequestDto requestDto) throws MailkeetsException, IOException {
+    public String sendMail(MailRequestDto requestDto) throws KursahaException, IOException {
         Call<MailResponseDto> repos = service.sendMail(requestDto, "Bearer " + apiKey);
         Response<MailResponseDto> response = repos.execute();
         if (!response.isSuccessful()) {
             try {
                 ErrorMessageDto errorMessageDto = gson.fromJson(response.errorBody().charStream(), ErrorMessageDto.class);
                 LOGGER.error("failed to execute request : {}", errorMessageDto);
-                throw new MailkeetsException(errorMessageDto);
+                throw new KursahaException(errorMessageDto);
             } catch (JsonIOException | JsonSyntaxException je) {
                 throw new RuntimeException(je);
             }

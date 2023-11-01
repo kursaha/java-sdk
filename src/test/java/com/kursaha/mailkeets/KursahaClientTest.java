@@ -1,6 +1,6 @@
 package com.kursaha.mailkeets;
 
-import com.kursaha.common.MailkeetsException;
+import com.kursaha.common.KursahaException;
 import com.kursaha.mailkeets.client.MailkeetsClient;
 import com.kursaha.mailkeets.dto.MailRequestDto;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +44,7 @@ public class KursahaClientTest {
     }
 
     @Test
-    public void sendMailTest () throws MailkeetsException, IOException {
+    public void sendMailTest () throws KursahaException, IOException {
         prepare();
         // mock
         when(mailkeetsClient.sendMail(requestDto)).thenReturn(requestIdentifier.toString());

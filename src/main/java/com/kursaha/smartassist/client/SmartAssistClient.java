@@ -28,7 +28,7 @@ public interface SmartAssistClient {
     /**
      * Request to get the chat response
      *
-     * @param identifier
+     * @param identifier chat identifier
      * @param request      string
      * @param historyQAndA previous chat
      * @return response
@@ -37,7 +37,8 @@ public interface SmartAssistClient {
      *                          decoding the response.
      */
     String getResponse(
-            UUID identifier, String request,
+            UUID identifier,
+            String request,
             List<ChatAutomationRequestDto.QAndA> historyQAndA
     ) throws IOException;
 }
