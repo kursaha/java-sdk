@@ -76,6 +76,8 @@ public class KursahaClient {
         OkHttpClient okHttpClient =
                 new OkHttpClient.Builder()
                         .connectTimeout(Duration.ofMinutes(1))
+                        .callTimeout(Duration.ofMinutes(1))
+                        .readTimeout(Duration.ofMinutes(1))
                         .dispatcher(dispatcher)
                         .addInterceptor(interceptor).build();
 
